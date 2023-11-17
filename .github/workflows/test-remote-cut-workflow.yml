@@ -8,7 +8,7 @@ on:
         default: 'main'
 jobs:
   call-common-workflow:
-    uses: robertlincecum/test-cicd/.github/workflows/cut-release-common.yml@main
+    uses: dominant-strategies/quai-cicd/.github/workflows/cut-release-common.yml@main
     with:
       branch: main
       needs_build: true

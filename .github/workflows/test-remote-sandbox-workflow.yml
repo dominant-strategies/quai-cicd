@@ -6,7 +6,7 @@ on:
       - 'v?[0-9]+.[0-9]+'
 jobs:
   call-common-workflow:
-    uses: robertlincecum/test-cicd/.github/workflows/deploy-sandbox-common.yml@main
+    uses: dominant-strategies/quai-cicd/.github/workflows/deploy-sandbox-common.yml@main
     with:
       needs_build: true
       install_command: "npm ci"

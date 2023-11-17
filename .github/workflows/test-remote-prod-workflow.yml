@@ -2,7 +2,7 @@ name: Test Use of Common Prod Workflow
 on: workflow_dispatch
 jobs:
   call-common-workflow:
-    uses: robertlincecum/test-cicd/.github/workflows/deploy-prod-common.yml@main
+    uses: dominant-strategies/quai-cicd/.github/workflows/deploy-prod-common.yml@main
     with:
       needs_build: true
       install_command: "npm ci"
