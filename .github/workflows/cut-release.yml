@@ -1,0 +1,130 @@
+name: Cut a new Minor Release Branch
+on: workflow_dispatch
+jobs:
+  detect-language:
+    runs-on: ubuntu-latest
+    outputs:
+      language: ${{ env.detected-language }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Detect Language
+        id: set-language
+        run: |
+          if [[ -f "package.json" && ! -f "tsconfig.json" ]]; then
+            echo "detected-language=javascript" >> $GITHUB_ENV
+            echo "detected-language=javascript"
+          elif [[ -f "tsconfig.json" ]]; then
+            echo "detected-language=typescript" >> $GITHUB_ENV
+          elif [[ -f "go.mod" ]]; then
+            echo "detected-language=go" >> $GITHUB_ENV
+          elif [[ -f "mix.exs" ]]; then
+            echo "detected-language=elixir" >> $GITHUB_ENV
+          else
+            echo "detected-language=unknown" >> $GITHUB_ENV
+          fi
+          echo "testing"
+
+  cutReleaseCandidateJS:
+    needs: detect-language
+    runs-on: ubuntu-latest
+    outputs:
+        branch: ${{ steps.set-branch.outputs.branch }}
+    if: needs.detect-language.outputs.language == 'javascript'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.GH_PAT }}
+
+      - name: Set Repo Name
+        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+
+      - name: Set Repo Name in Camel Case
+        run: |
+          repo_name=$(basename ${{ github.repository }})
+          camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
+          echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
+
+
+      - name: Install Volta
+        run: |
+          curl -sSLf https://get.volta.sh | bash
+          echo "$HOME/.volta/bin" >> $GITHUB_PATH
+
+      - name: Log Node and Npm Versions
+        run:  |
+          echo node version $(node -v)
+          echo npm version $(npm -v)
+
+      - name: Update Version
+        run: |
+          NEW_VERSION=$(npm version prerelease --preid=rc --no-git-tag-version)
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Update Chart.yaml version
+        run: yq eval -P -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
+
+      - name: Update values.yaml version
+        run: yq eval -P -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
+
+      - name: Update version environment variable
+        run: echo "VERSION=$(echo $VERSION | sed 's/\.[0-9]*-.*//g')" >> $GITHUB_ENV
+
+      - name: Store version in branch variable
+        id: set-branch
+        run: echo "branch=${{ env.VERSION }}" >> $GITHUB_OUTPUT
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Release ${{ env.VERSION }}
+          branch: ${{ env.VERSION }}
+          create_branch: true
+
+      - uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.GH_PAT }}
+
+      - name: Set Repo Name
+        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+
+      - name: Set Repo Name in Camel Case
+        run: |
+          repo_name=$(basename ${{ github.repository }})
+          camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
+          echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
+
+      - name: Update Version
+        run: |
+          NEW_VERSION=$(npm version preminor --preid=pre --no-git-tag-version)
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Sync package-lock.json
+        run: npm i --package-lock-only --ignore-scripts
+
+      - name: Update Chart.yaml version
+        run: yq eval -P -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
+
+      - name: Update values.yaml version
+        run: yq eval -P -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Rev'd main to Release ${{ env.VERSION }}
+          branch: main
+
+  deployReleaseCandidateJS:
+    uses: ./.github/workflows/build-deploy-js.yml
+    needs: [cutReleaseCandidateJS]
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+    with:
+      env: quai-sandbox
+      update_version_command: npm version prerelease --preid=rc --no-git-tag-version
+      branch: ${{ needs.cutReleaseCandidateJS.outputs.branch }}
+      rails: '[[ "$VERSION" =~ "rc" ]]'
+      update_version: true
+      cloud_deploy: false

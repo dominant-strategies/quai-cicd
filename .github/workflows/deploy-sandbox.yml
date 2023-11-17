@@ -1,0 +1,47 @@
+name: Build and Deploy to Sandbox
+on:
+  pull_request:
+    types: [closed]
+    branches:
+    - 'v?[0-9]+.[0-9]+'
+jobs:
+  detect-language:
+    runs-on: ubuntu-latest
+    outputs:
+      language: ${{ env.detected-language }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Detect Language
+        id: set-language
+        run: |
+          if [[ -f "package.json" && ! -f "tsconfig.json" ]]; then
+            echo "detected-language=javascript" >> $GITHUB_ENV
+            echo "detected-language=javascript"
+          elif [[ -f "tsconfig.json" ]]; then
+            echo "detected-language=typescript" >> $GITHUB_ENV
+          elif [[ -f "go.mod" ]]; then
+            echo "detected-language=go" >> $GITHUB_ENV
+          elif [[ -f "mix.exs" ]]; then
+            echo "detected-language=elixir" >> $GITHUB_ENV
+          else
+            echo "detected-language=unknown" >> $GITHUB_ENV
+          fi
+          echo "testing"
+
+  buildDeploySandboxJS:
+    needs: detect-language
+    if: github.event.pull_request.merged == true && needs.detect-language.outputs.language == 'javascript'
+    uses: ./.github/workflows/build-deploy-js.yml
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+    with:
+      env: quai-sandbox
+      update_version_command: npm version prerelease --preid=rc --no-git-tag-version
+      rails: '[[ ! "$VERSION" =~ "pre" ]]'
+      update_version: true
+      cloud_deploy: false

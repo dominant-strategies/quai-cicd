@@ -1,0 +1,6 @@
+testCicd:
+  image:
+    name: quainetwork/test-cicd
+    version: v1.6.0-pre.0
+  env: quai-dev
+  replicas: 1

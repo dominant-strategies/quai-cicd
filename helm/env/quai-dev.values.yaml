@@ -1,0 +1,3 @@
+testCicd:
+  env: "quai-dev"
+  cloud: false

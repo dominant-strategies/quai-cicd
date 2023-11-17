@@ -1,0 +1,3 @@
+testCicd:
+  env: "quai-sandbox"
+  cloud: false

@@ -1,0 +1,102 @@
+name: Build and Deploy to Dev
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [ "main" ]
+
+jobs:
+
+  detect-language:
+    runs-on: ubuntu-latest
+    outputs:
+      language: ${{ env.detected-language }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Detect Language
+        id: set-language
+        run: |
+          if [[ -f "package.json" && ! -f "tsconfig.json" ]]; then
+            echo "detected-language=javascript" >> $GITHUB_ENV
+            echo "detected-language=javascript"
+          elif [[ -f "tsconfig.json" ]]; then
+            echo "detected-language=typescript" >> $GITHUB_ENV
+          elif [[ -f "go.mod" ]]; then
+            echo "detected-language=go" >> $GITHUB_ENV
+          elif [[ -f "mix.exs" ]]; then
+            echo "detected-language=elixir" >> $GITHUB_ENV
+          else
+            echo "detected-language=unknown" >> $GITHUB_ENV
+          fi
+          echo "testing"
+
+  print-detected-language:
+    needs: detect-language
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Detected Language
+        run: |
+          echo "Detected Language: ${{ needs.detect-language.outputs.language }}"
+
+
+  buildDeployDevTS:
+    needs: detect-language
+    if: needs.detect-language.outputs.language == 'typescript'
+    uses: ./.github/workflows/build-deploy-ts.yml
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+    with:
+      env: quai-dev
+      awk: awk -F. '{print $1"."$2"."$3"."$4+1}'
+      update_version: true
+      cloud_deploy: false
+
+  buildDeployDevJS:
+    needs: detect-language
+    if: needs.detect-language.outputs.language == 'javascript'
+    uses: ./.github/workflows/build-deploy-js.yml
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+    with:
+      env: quai-dev
+      update_version_command: npm version prerelease --preid=pre --no-git-tag-version
+      update_version: true
+      cloud_deploy: false
+
+  buildDeployDevGo:
+    needs: detect-language
+    if: needs.detect-language.outputs.language == 'go'
+    uses: ./.github/workflows/build-deploy-go.yml
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+    with:
+      env: quai-dev
+      awk: awk -F. '{print $1"."$2"."$3"."$4+1}'
+      update_version: true
+      cloud_deploy: false
+
+  buildDeployDevElixir:
+    needs: detect-language
+    if: needs.detect-language.outputs.language == 'elixir'
+    uses: ./.github/workflows/build-deploy-elixir.yml
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+    with:
+      env: quai-dev
+      awk: awk -F. '{print $1"."$2"."$3"."$4+1}'
+      update_version: true
+      cloud_deploy: false

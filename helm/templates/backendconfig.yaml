@@ -1,0 +1,14 @@
+{{- if .Values.testCicd.cloud }}
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  annotations:
+  name: {{ include "test-cicd.name" $ }}
+  namespace: {{ .Values.testCicd.env }}
+spec:
+  healthCheck:
+    checkIntervalSec: 15
+    port: 50451
+    requestPath: /healthz
+    type: HTTP
+{{- end }}

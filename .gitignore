@@ -1,0 +1,16 @@
+# Node.js related
+node_modules/
+npm-debug.log
+
+# Elixir related
+/_build/
+/deps/
+/cover/
+*.ez
+
+# IDEs
+.idea/
+.vscode/
+
+# OS related
+.DS_Store

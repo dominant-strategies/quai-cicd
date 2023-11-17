@@ -1,0 +1,20 @@
+name: Test Use of Common Sandbox Workflow
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - 'v?[0-9]+.[0-9]+'
+jobs:
+  call-common-workflow:
+    uses: robertlincecum/test-cicd/.github/workflows/deploy-sandbox-common.yml@main
+    with:
+      needs_build: true
+      install_command: "npm ci"
+      cloud_deploy: false
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+      BUILD_ARGS: 'BUILD_ENV=production'
+      DOCKER_BUILD_ARGS: 'BUILD_ENV=quai-dev,LOCAL_GCP_CAPTCHA=${{ secrets.LOCAL_GCP_CAPTCHA }}'

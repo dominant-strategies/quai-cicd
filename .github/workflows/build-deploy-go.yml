@@ -1,0 +1,193 @@
+name: Build and Deploy sub-action go
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+      awk:
+        required: true
+        type: string
+      rails:
+        required: false
+        type: string
+        default: echo "continuing."
+      branch:
+        required: false
+        type: string
+        default: ${{ github.ref }}
+      update_version:
+        required: true
+        type: boolean
+        default: true
+      cloud_deploy:
+        required: true
+        type: boolean
+        default: false
+    secrets:
+      GH_PAT:
+        description: 'needed for github login'
+        required: true
+      DOCKER:
+        description: 'needed for registry login'
+        required: true
+      DOCKER_USERNAME:
+        description: 'needed for registry login'
+        required: true
+      KUBE_CONFIG:
+        description: 'needed for kube setup'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ inputs.branch }}
+        ssh-key: ${{ secrets.GH_PAT }}
+
+    - name: Set Repo Name
+      run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+
+    - name: Install Volta
+      run: |
+        curl -sSLf https://get.volta.sh | bash
+        echo "$HOME/.volta/bin" >> $GITHUB_PATH
+
+    - name: Log Node and Npm Versions
+      run:  |
+        echo node version $(node -v)
+        echo npm version $(npm -v)
+
+    - name: Install yq
+      run: sudo snap install yq
+
+    - name: get Version
+      run: echo "VERSION=$(sudo yq eval '.version' package.json -o yaml)" >> $GITHUB_ENV
+
+    - name: Sanity Check Branch
+      run: ${{ inputs.rails }}
+
+    - name: Sync Chart.yaml version
+      run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
+
+    - name: Sync values.yaml version
+      run: yq eval -i ".quaiDashboardApi.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: quaibuild
+        password: ${{ secrets.DOCKER }}
+
+    - name: Build Docker
+      run: docker build --build-arg BUILD_ENV=${{ inputs.env }} -t quainetwork/${{ env.REPO_NAME }}:${{ env.VERSION }} .
+
+
+    - name: Push to Docker Hub
+      run: docker push quainetwork/${{ env.REPO_NAME }}:${{ env.VERSION }}
+
+    - name: git tag
+      if: ${{ inputs.update_version }}
+      run: git tag ${{ env.VERSION }} && HUSKY=0 git push origin tag ${{ env.VERSION }}
+
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      if: ${{ inputs.update_version }}
+      with:
+        branch: ${{ inputs.branch }}
+      env:
+        HUSKY: 0
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ inputs.branch }}
+        ssh-key: ${{ secrets.GH_PAT }}
+
+    - name: Install Volta
+      run: |
+        curl -sSLf https://get.volta.sh | bash
+        echo "$HOME/.volta/bin" >> $GITHUB_PATH
+
+    - name: Log Node and Npm Versions
+      run:  |
+        echo node version $(node -v)
+        echo npm version $(npm -v)
+
+
+    - name: Deploy to cloud
+      uses: WyriHaximus/github-action-helm3@v2
+      if: ${{ inputs.cloud_deploy }}
+      id: deploy
+      continue-on-error: true
+      with:
+        exec: helm upgrade ${{ env.REPO_NAME }} ./helm --install --namespace=${{ inputs.env }} --values=./helm/env/${{ inputs.env }}.values.yaml
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+    - name: Deploy to local from bastion
+      if: ${{ inputs.cloud_deploy != true }}
+      continue-on-error: true
+      run: |
+        echo installing kubectl...
+        curl -LO "https://dl.k8s.io/release/v1.25.9/bin/linux/amd64/kubectl"
+        chmod +x ./kubectl
+        sudo mv ./kubectl /usr/local/bin/kubectl
+        echo kubectl installed
+        echo setting kubeconfig...
+        echo "${{ secrets.KUBE_CONFIG }}" > kubeconfig.yaml
+        export KUBECONFIG=kubeconfig.yaml
+        echo kubeconfig set
+        echo testing kubectl connection...
+        kubectl get po
+        echo clearing bastion helm
+        kubectl exec -it $(kubectl get po -n kube-system -l app=bastion -o jsonpath="{.items[0].metadata.name}") -n kube-system -- rm -rf helm
+        echo bastion helm cleared
+        echo copying helm to bastion...
+        kubectl cp -n kube-system ./helm $(kubectl get po -n kube-system -l app=bastion -o jsonpath="{.items[0].metadata.name}"):/helm
+        echo helm chart copied to bastion
+        echo deploying helm chart from bastion...
+        kubectl exec -it $(kubectl get po -n kube-system -l app=bastion -o jsonpath="{.items[0].metadata.name}") -n kube-system -- helm upgrade --install ${{ env.REPO_NAME }} ./helm --namespace=${{ inputs.env }} --values=./helm/env/${{ inputs.env }}.values.yaml 
+        echo helm chart deployed!!!
+        echo cleaning bastion
+        kubectl exec -it $(kubectl get po -n kube-system -l app=bastion -o jsonpath="{.items[0].metadata.name}") -n kube-system -- rm -rf helm
+        echo bastion helm cleared
+        echo bastion cleaned up 
+
+    - name: Install yq
+      run: sudo snap install yq
+
+    - name: get Version
+      run: echo "VERSION=$(sudo yq eval '.version' package.json -o yaml)" >> $GITHUB_ENV
+
+    - name: Update version environment variable
+      if: ${{ inputs.update_version }}
+      run: echo "VERSION=$(echo $VERSION | ${{ inputs.awk  }})" >> $GITHUB_ENV
+
+    - name: Update version
+      if: ${{ inputs.update_version }}
+      run: yq eval -i ".version=\"${{ env.VERSION }}\"" package.json -jP
+
+    - name: Update Chart.yaml version
+      if: ${{ inputs.update_version }}
+      run: yq eval -P -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
+    - name: Update values.yaml version
+      run: yq eval -P -i ".quaiDashboardApi.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
+
+    - name: Update package-lock.json
+      continue-on-error: true
+      run: npm i --package-lock-only --ignore-scripts
+
+    - name: rm kubeconfig
+      continue-on-error: true
+      run: rm kubeconfig.yaml
+
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      if: ${{ inputs.update_version }}
+      with:
+        branch: ${{ inputs.branch }}
+      env:
+        HUSKY: 0

@@ -1,0 +1,55 @@
+{{- $name := include "test-cicd.name" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ $name }}
+  name: {{ $name }}
+  namespace: {{ .Values.testCicd.env }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.testCicd.replicas }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $name }}
+    spec:
+      containers:
+      - image: {{ .Values.testCicd.image.name -}}:{{- .Values.testCicd.image.version }}
+        env:
+        - name: NODE_ENV
+          value: {{ .Values.testCicd.env }}
+        - name: NODE_CONFIG
+          valueFrom:
+            secretKeyRef:
+              key: NODE_CONFIG
+              name: {{ $name }}
+        imagePullPolicy: Always
+#        livenessProbe:
+#          failureThreshold: 1
+#          httpGet:
+#            path: /
+#            port: http
+#            scheme: HTTP
+#          periodSeconds: 10
+#          successThreshold: 1
+#          timeoutSeconds: 1
+        name: {{ $name }}
+        ports:
+        - containerPort: 50451
+          name: http
+          protocol: TCP
+        resources: {}
+#        startupProbe:
+#          failureThreshold: 30
+#          httpGet:
+#            path: /
+#            port: http
+#            scheme: HTTP
+#          periodSeconds: 10
+#          successThreshold: 1
+#          timeoutSeconds: 1

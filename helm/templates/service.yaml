@@ -1,0 +1,17 @@
+{{- $name := include "test-cicd.name" . -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  namespace: {{ .Values.testCicd.env }}
+  annotations:
+    cloud.google.com/backend-config: {{ printf "{\"default\":\"%s\"}" (include "test-cicd.name" $) | toRawJson }}
+spec:
+  ports:
+  - name: http
+    port: 50451
+    protocol: TCP
+    targetPort: 50451
+  selector:
+    app: {{ $name }}
+  type: NodePort

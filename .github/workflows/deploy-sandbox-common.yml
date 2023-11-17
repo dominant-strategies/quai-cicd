@@ -1,0 +1,101 @@
+name: Common Build and Deploy to Sandbox
+on:
+  workflow_call:
+    inputs:
+      needs_build:
+        description: 'Whether to build or not'
+        required: true
+        type: boolean
+        default: false
+      install_command:
+        description: 'Command to run to install dependencies'
+        type: string
+        required: false
+      cloud_deploy:
+        required: true
+        type: boolean
+        default: false
+    secrets:
+      GH_PAT:
+        description: 'needed for github login'
+        required: true
+      DOCKER_USERNAME:
+        description: 'needed for registry login'
+        required: true
+      DOCKER:
+        description: 'needed for registry login'
+        required: true
+      KUBE_CONFIG:
+        description: 'needed for kube setup'
+        required: true
+      BUILD_ARGS:
+        description: 'needed for build args'
+        required: false
+      DOCKER_BUILD_ARGS:
+        description: 'needed for docker build args'
+        required: false
+jobs:
+  detect-language:
+    runs-on: ubuntu-latest
+    outputs:
+      language: ${{ env.detected-language }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Detect Language
+        id: set-language
+        run: |
+          if [[ -f "package.json" && ! -f "tsconfig.json" ]]; then
+            echo "detected-language=javascript" >> $GITHUB_ENV
+            echo "detected-language=javascript"
+          elif [[ -f "tsconfig.json" ]]; then
+            echo "detected-language=typescript" >> $GITHUB_ENV
+          elif [[ -f "go.mod" ]]; then
+            echo "detected-language=go" >> $GITHUB_ENV
+          elif [[ -f "mix.exs" ]]; then
+            echo "detected-language=elixir" >> $GITHUB_ENV
+          else
+            echo "detected-language=unknown" >> $GITHUB_ENV
+          fi
+          echo "testing"
+
+  buildDeploySandboxJS:
+    needs: detect-language
+    if: github.event.pull_request.merged == true && needs.detect-language.outputs.language == 'javascript'
+    uses: ./.github/workflows/build-deploy-js.yml
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+      DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
+      BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
+    with:
+      env: quai-sandbox
+      update_version_command: npm version prerelease --preid=rc --no-git-tag-version
+      rails: '[[ ! "$VERSION" =~ "pre" ]]'
+      update_version: true
+      cloud_deploy: ${{ inputs.cloud_deploy }}
+      needs_build: ${{ inputs.needs_build }}
+      install_command: ${{ inputs.install_command }}
+
+  buildDeploySandboxTS:
+    needs: detect-language
+    if: github.event.pull_request.merged == true && needs.detect-language.outputs.language == 'typescript'
+    uses: ./.github/workflows/build-deploy-ts.yml
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+      DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
+      BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
+    with:
+      env: quai-sandbox
+      update_version_command: npm version prerelease --preid=rc --no-git-tag-version
+      rails: '[[ ! "$VERSION" =~ "pre" ]]'
+      update_version: true
+      cloud_deploy: ${{ inputs.cloud_deploy }}
+      needs_build: ${{ inputs.needs_build }}
+      install_command: ${{ inputs.install_command }}

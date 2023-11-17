@@ -1,0 +1,8 @@
+{
+  "name": "sample-js-project",
+  "version": "1.0.0-pre.2",
+  "scripts": {
+    "build": "echo 'Building JS project...'"
+  },
+  "dependencies": {}
+}
