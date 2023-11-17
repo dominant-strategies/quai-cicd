@@ -191,6 +191,11 @@ jobs:
           echo node version $(node -v)
           echo npm version $(npm -v)
 
+      - name: Debug deploy config
+        run: |
+          echo cloud_deploy: ${{ inputs.cloud_deploy }}
+          echo skip_deploy: ${{ inputs.skip_deploy }}
+          echo env: ${{ inputs.env }}
 
       - name: Deploy to cloud
         uses: WyriHaximus/github-action-helm3@v2
