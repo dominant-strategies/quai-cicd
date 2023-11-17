@@ -4,3 +4,6 @@ testCicd:
     version: v1.6.0-pre.0
   env: quai-dev
   replicas: 1
+quaiCicd:
+  image:
+    version: 1.6.0-pre.0
