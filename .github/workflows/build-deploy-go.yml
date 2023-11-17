@@ -31,9 +31,6 @@ on:
       DOCKER:
         description: 'needed for registry login'
         required: true
-      DOCKER_USERNAME:
-        description: 'needed for registry login'
-        required: true
       KUBE_CONFIG:
         description: 'needed for kube setup'
         required: true
