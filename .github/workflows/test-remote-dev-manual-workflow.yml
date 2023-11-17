@@ -16,7 +16,6 @@ jobs:
       skip_deploy: true
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       GH_PAT: ${{ secrets.GH_PAT }}
       KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
       BUILD_ARGS: 'BUILD_ENV=production'

@@ -23,9 +23,6 @@ on:
       GH_PAT:
         description: 'needed for github login'
         required: true
-      DOCKER_USERNAME:
-        description: 'needed for registry login'
-        required: true
       DOCKER:
         description: 'needed for registry login'
         required: true
@@ -116,7 +113,6 @@ jobs:
     uses: ./.github/workflows/build-deploy-js.yml
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       GH_PAT: ${{ secrets.GH_PAT }}
       KUBE_CONFIG: ${{ secrets.KUBECONFIG_PROD }}
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
@@ -136,7 +132,6 @@ jobs:
     uses: ./.github/workflows/build-deploy-ts.yml
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       GH_PAT: ${{ secrets.GH_PAT }}
       KUBE_CONFIG: ${{ secrets.KUBECONFIG_PROD }}
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
