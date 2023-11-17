@@ -78,7 +78,7 @@ jobs:
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
       GH_PAT: ${{ secrets.GH_PAT }}
-      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
     with:
@@ -97,7 +97,7 @@ jobs:
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
       GH_PAT: ${{ secrets.GH_PAT }}
-      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
     with:
@@ -116,7 +116,7 @@ jobs:
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
       GH_PAT: ${{ secrets.GH_PAT }}
-      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
     with:
       env: quai-dev
       awk: awk -F. '{print $1"."$2"."$3"."$4+1}'
@@ -130,7 +130,7 @@ jobs:
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
       GH_PAT: ${{ secrets.GH_PAT }}
-      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
     with:
       env: quai-dev
       awk: awk -F. '{print $1"."$2"."$3"."$4+1}'

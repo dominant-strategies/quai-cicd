@@ -11,6 +11,6 @@ jobs:
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
       GH_PAT: ${{ secrets.GH_PAT }}
-      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_PROD }}
       BUILD_ARGS: 'BUILD_ENV=production'
       DOCKER_BUILD_ARGS: 'BUILD_ENV=quai-dev,LOCAL_GCP_CAPTCHA=${{ secrets.LOCAL_GCP_CAPTCHA }}'

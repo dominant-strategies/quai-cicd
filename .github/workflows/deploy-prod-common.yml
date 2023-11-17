@@ -114,7 +114,7 @@ jobs:
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
       GH_PAT: ${{ secrets.GH_PAT }}
-      KUBE_CONFIG: ${{ secrets.KUBECONFIG_PROD }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
     with:
@@ -133,7 +133,7 @@ jobs:
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
       GH_PAT: ${{ secrets.GH_PAT }}
-      KUBE_CONFIG: ${{ secrets.KUBECONFIG_PROD }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
     with:
