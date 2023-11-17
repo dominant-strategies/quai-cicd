@@ -7,6 +7,7 @@ jobs:
       needs_build: true
       install_command: "npm ci"
       cloud_deploy: false
+      skip_deploy: false
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}

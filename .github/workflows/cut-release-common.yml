@@ -20,6 +20,10 @@ on:
         required: true
         type: boolean
         default: false
+      skip_deploy:
+        required: false
+        type: boolean
+        default: false
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -260,6 +264,7 @@ jobs:
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
+      skip_deploy: ${{ inputs.skip_deploy }}
 
   deployReleaseCandidateTS:
     uses: ./.github/workflows/build-deploy-ts.yml
@@ -281,3 +286,4 @@ jobs:
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
+      skip_deploy: ${{ inputs.skip_deploy }}

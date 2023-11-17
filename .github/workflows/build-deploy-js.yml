@@ -30,7 +30,12 @@ on:
         type: boolean
       install_command:
         required: false
-        type: string
+        type: strin
+      skip_deploy:
+        required: false
+        type: boolean
+        default: false
+
 
     secrets:
       GH_PAT:
@@ -193,7 +198,7 @@ jobs:
 
       - name: Deploy to cloud
         uses: WyriHaximus/github-action-helm3@v2
-        if: ${{ inputs.cloud_deploy }}
+        if: ${{ inputs.cloud_deploy }} && ${{ inputs.skip_deploy != true }}
         id: deploy
         continue-on-error: true
         with:
@@ -201,7 +206,7 @@ jobs:
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
 
       - name: Deploy to local from bastion
-        if: ${{ inputs.cloud_deploy != true }}
+        if: ${{ inputs.cloud_deploy != true }} && ${{ inputs.skip_deploy != true }}
         continue-on-error: true
         run: |
           echo installing kubectl...
