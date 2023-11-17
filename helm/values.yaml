@@ -6,4 +6,4 @@ testCicd:
   replicas: 1
 quaiCicd:
   image:
-    version: 1.6.0-pre.2
+    version: 1.6.0-pre.3
