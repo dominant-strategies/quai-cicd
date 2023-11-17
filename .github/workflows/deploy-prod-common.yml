@@ -108,6 +108,52 @@ jobs:
           commit_message: "Prod Release ${{ env.VERSION }}"
           branch: ${{ github.ref }}
 
+  createProdTagTS:
+    needs: detect-language
+    runs-on: ubuntu-latest
+    if: needs.detect-language.outputs.language == 'typescript'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.GH_PAT }}
+
+      - name: Set Repo Name
+        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+
+      - name: Set Repo Name in Camel Case
+        run: |
+          repo_name=$(basename ${{ github.repository }})
+          camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
+          echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
+
+      - name: Install Volta
+        run: |
+          curl -sSLf https://get.volta.sh | bash
+          echo "$HOME/.volta/bin" >> $GITHUB_PATH
+
+      - name: Log Node and Npm Versions
+        run:  |
+          echo node version $(node -v)
+          echo npm version $(npm -v)
+
+      - name: Update Version
+        run: |
+          npm version patch --no-git-tag-version
+          VERSION_VALUE=$(sudo yq eval '.version' package.json | head -n 1)
+          echo "VERSION=$VERSION_VALUE"
+          echo "VERSION=$VERSION_VALUE" >> $GITHUB_ENV
+
+      - name: Update Chart.yaml version
+        run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
+
+      - name: Update values.yaml version
+        run: yq eval -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Prod Release ${{ env.VERSION }}"
+          branch: ${{ github.ref }}
+
   buildDeployProdJS:
     needs: [createProdTagJS]
     uses: ./.github/workflows/build-deploy-js.yml
