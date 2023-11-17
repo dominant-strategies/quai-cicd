@@ -30,7 +30,7 @@ on:
         type: boolean
       install_command:
         required: false
-        type: strin
+        type: string
       skip_deploy:
         required: false
         type: boolean
