@@ -190,19 +190,20 @@ jobs:
           echo node version $(node -v)
           echo npm version $(npm -v)
 
-      - name: Install Google Cloud SDK
+      - name: Import the Google Cloud public key
         if: ${{ inputs.cloud_deploy && !inputs.skip_deploy }}
         run: |
-          echo "Installing Google Cloud SDK..."
-          curl https://sdk.cloud.google.com | bash
-          echo "$HOME/google-cloud-sdk/bin" >> $GITHUB_PATH
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
 
-      - name: Install gke-gcloud-auth-plugin
+      - name: Add the gcloud CLI distribution URI as a package source
         if: ${{ inputs.cloud_deploy && !inputs.skip_deploy }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
+          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
 
+      - name: Update and install the gcloud CLI and auth plugin
+        if: ${{ inputs.cloud_deploy && !inputs.skip_deploy }}
+        run: |
+          sudo apt-get update && sudo apt-get install google-cloud-cli google-cloud-sdk-gke-gcloud-auth-plugin
 
       - name: Deploy to cloud
         uses: WyriHaximus/github-action-helm3@v2
