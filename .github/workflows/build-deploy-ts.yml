@@ -190,6 +190,13 @@ jobs:
           echo node version $(node -v)
           echo npm version $(npm -v)
 
+      - name: Install Google Cloud SDK
+        if: ${{ inputs.cloud_deploy && !inputs.skip_deploy }}
+        run: |
+          echo "Installing Google Cloud SDK..."
+          curl https://sdk.cloud.google.com | bash
+          echo "$HOME/google-cloud-sdk/bin" >> $GITHUB_PATH
+          gcloud components install gke-gcloud-auth-plugin
 
       - name: Deploy to cloud
         uses: WyriHaximus/github-action-helm3@v2
