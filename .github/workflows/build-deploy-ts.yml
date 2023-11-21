@@ -190,22 +190,6 @@ jobs:
           echo node version $(node -v)
           echo npm version $(npm -v)
 
-      - name: Set up Google Cloud
-        uses: google-github-actions/setup-gcloud@v1.1.1
-        with:
-          version: 'latest'
-          project_id: flash-gasket-349320
-      
-      - name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v0.4.0
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      
-      - name: Authenticate with GKE
-        run: | 
-          gcloud container clusters get-credentials quai-prod --zone us-central1-c --project flash-gasket-349320
-
       - name: Deploy to cloud
         uses: WyriHaximus/github-action-helm3@v2
         if: ${{ inputs.cloud_deploy && !inputs.skip_deploy }}
