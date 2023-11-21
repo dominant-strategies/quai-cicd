@@ -194,8 +194,13 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1.1.1
         with:
           version: 'latest'
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          project_id: flash-gasket-349320
+      
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v0.4.0
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
       
       - name: Authenticate with GKE
         run: | 
