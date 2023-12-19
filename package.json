@@ -1,8 +1,12 @@
 {
-  "name": "sample-js-project",
-  "version": "1.6.0-pre.4",
+  "name": "sample-ts-project",
+  "version": "1.0.0",
   "scripts": {
-    "build": "echo 'Building JS project...' && echo $BUILD_ENV"
+    "build": "tsc"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^4.5.2"
+  }
 }
+
