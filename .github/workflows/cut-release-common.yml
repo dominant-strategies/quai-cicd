@@ -100,7 +100,7 @@ jobs:
 
       - name: Update Version
         run: |
-          NEW_VERSION=$(npm version prerelease --preid=rc --no-git-tag-version)
+          NEW_VERSION=$(npm version prerelease --preid=rc --no-git-tag-version | sed 's/^v//')
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
@@ -137,7 +137,7 @@ jobs:
 
       - name: Update Version
         run: |
-          NEW_VERSION=$(npm version preminor --preid=pre --no-git-tag-version)
+          NEW_VERSION=$(npm version preminor --preid=pre --no-git-tag-version | sed 's/^v//')
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Sync package-lock.json
@@ -187,7 +187,7 @@ jobs:
 
       - name: Update Version
         run: |
-          NEW_VERSION=$(npm version prerelease --preid=rc --no-git-tag-version)
+          NEW_VERSION=$(npm version prerelease --preid=rc --no-git-tag-version | sed 's/^v//')
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
@@ -224,7 +224,7 @@ jobs:
 
       - name: Update Version
         run: |
-          NEW_VERSION=$(npm version preminor --preid=pre --no-git-tag-version)
+          NEW_VERSION=$(npm version preminor --preid=pre --no-git-tag-version | sed 's/^v//')
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Sync package-lock.json
