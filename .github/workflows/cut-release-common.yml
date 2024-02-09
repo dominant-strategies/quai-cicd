@@ -24,6 +24,11 @@ on:
         required: false
         type: boolean
         default: false
+      env:
+        description: 'Deployment namespace/environment'
+        required: false
+        type: string
+        default: 'quai-sandbox'
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -252,7 +257,7 @@ jobs:
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
     with:
-      env: quai-sandbox
+      env: ${{ inputs.env }}
       update_version_command: npm version prerelease --preid=rc --no-git-tag-version
       branch: ${{ needs.cutReleaseCandidateJS.outputs.branch }}
       rails: '[[ "$VERSION" =~ "rc" ]]'
@@ -273,7 +278,7 @@ jobs:
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
     with:
-      env: quai-sandbox
+      env: ${{ inputs.env }}
       update_version_command: npm version prerelease --preid=rc --no-git-tag-version
       branch: ${{ needs.cutReleaseCandidateTS.outputs.branch }}
       rails: '[[ "$VERSION" =~ "rc" ]]'
