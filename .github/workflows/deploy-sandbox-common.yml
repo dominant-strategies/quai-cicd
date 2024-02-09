@@ -19,6 +19,10 @@ on:
         required: false
         type: boolean
         default: false
+      env:
+        required: false
+        type: string
+        default: quai-sandbox
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -72,7 +76,7 @@ jobs:
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
     with:
-      env: quai-sandbox
+      env: ${{ inputs.env }}
       update_version_command: npm version prerelease --preid=rc --no-git-tag-version
       rails: '[[ ! "$VERSION" =~ "pre" ]]'
       update_version: true
@@ -92,7 +96,7 @@ jobs:
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
     with:
-      env: quai-sandbox
+      env: ${{ inputs.env }}
       update_version_command: npm version prerelease --preid=rc --no-git-tag-version
       rails: '[[ ! "$VERSION" =~ "pre" ]]'
       update_version: true

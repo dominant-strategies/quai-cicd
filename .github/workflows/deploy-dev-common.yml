@@ -19,6 +19,10 @@ on:
         required: false
         type: boolean
         default: false
+      env:
+        required: false
+        type: string
+        default: quai-dev
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -82,7 +86,7 @@ jobs:
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
     with:
-      env: quai-dev
+      env: ${{ inputs.env }}
       update_version_command: npm version prerelease --preid=pre --no-git-tag-version
       update_version: true
       cloud_deploy: false
@@ -101,7 +105,7 @@ jobs:
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
     with:
-      env: quai-dev
+      env: ${{ inputs.env }}
       update_version_command: npm version prerelease --preid=pre --no-git-tag-version
       update_version: true
       cloud_deploy: false
@@ -118,7 +122,7 @@ jobs:
       GH_PAT: ${{ secrets.GH_PAT }}
       KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
     with:
-      env: quai-dev
+      env: ${{ inputs.env }}
       awk: awk -F. '{print $1"."$2"."$3"."$4+1}'
       update_version: true
       cloud_deploy: false
@@ -132,7 +136,7 @@ jobs:
       GH_PAT: ${{ secrets.GH_PAT }}
       KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
     with:
-      env: quai-dev
+      env: ${{ inputs.env }}
       awk: awk -F. '{print $1"."$2"."$3"."$4+1}'
       update_version: true
       cloud_deploy: ${{ inputs.cloud_deploy }}
