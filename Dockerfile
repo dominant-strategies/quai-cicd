@@ -1,9 +1,10 @@
-FROM node:14
+FROM golang:1.17
 
 WORKDIR /app
 
 COPY ./ .
 
-RUN npm install
-CMD ["npm", "start"]
+RUN go build -o main .
+
+CMD ["./main"]
 

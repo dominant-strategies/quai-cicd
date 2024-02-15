@@ -7,6 +7,10 @@ on:
         required: true
         type: boolean
         default: false
+      build_command:
+        description: 'Command to run to build'
+        type: string
+        required: false
       install_command:
           description: 'Command to run to install dependencies'
           type: string
@@ -16,6 +20,14 @@ on:
         type: boolean
         default: false
       skip_deploy:
+        required: false
+        type: boolean
+        default: false
+      include_chart:
+        required: false
+        type: boolean
+        default: false
+      needs_docker:
         required: false
         type: boolean
         default: false
@@ -121,11 +133,18 @@ jobs:
       DOCKER: ${{ secrets.DOCKER }}
       GH_PAT: ${{ secrets.GH_PAT }}
       KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
     with:
       env: ${{ inputs.env }}
-      awk: awk -F. '{print $1"."$2"."$3"."$4+1}'
+      update_version_command: "echo \"v$(semver -i prerelease $(sed 's/^v//' VERSION) --preid=pre)\" > VERSION"
       update_version: true
       cloud_deploy: false
+      needs_build: ${{ inputs.needs_build }}
+      install_command: ${{ inputs.install_command }}
+      skip_deploy: ${{ inputs.skip_deploy }}
+      build_command: ${{ inputs.build_command }}
+      needs_docker: ${{ inputs.needs_docker }}
+      include_chart: ${{ inputs.include_chart }}
 
   buildDeployDevElixir:
     needs: detect-language
