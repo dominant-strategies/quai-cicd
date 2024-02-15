@@ -5,7 +5,9 @@ jobs:
     uses: dominant-strategies/quai-cicd/.github/workflows/deploy-prod-common.yml@main
     with:
       needs_build: true
-      install_command: "npm ci"
+      build_command: "make go-quai"
+      needs_docker: false
+      include_chart: false
       cloud_deploy: false
       skip_deploy: false
     secrets:
