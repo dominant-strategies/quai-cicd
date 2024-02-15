@@ -1,0 +1,22 @@
+name: Test Use of Common Dev Workflow
+on:
+  pull_request:
+    types: [closed]
+    branches: [ "main" ]
+jobs:
+  call-common-workflow:
+    uses: dominant-strategies/quai-cicd/.github/workflows/deploy-dev-common.yml@main
+    with:
+      needs_build: true
+      build_command: "make go-quai"
+      needs_docker: false
+      include_chart: false
+      needs_docs: false
+      cloud_deploy: false
+      skip_deploy: true
+
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_LOCAL }}
+      DOCKER_BUILD_ARGS: 'BUILD_ENV=quai-dev,LOCAL_GCP_CAPTCHA=${{ secrets.LOCAL_GCP_CAPTCHA }}'
