@@ -23,6 +23,18 @@ on:
         required: false
         type: string
         default: quai-prod
+      build_command:
+          description: 'Command to run to build'
+          type: string
+          required: false
+      needs_docker:
+          required: false
+          type: boolean
+          default: false
+      include_chart:
+          required: false
+          type: boolean
+          default: false
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -158,6 +170,56 @@ jobs:
           commit_message: "Prod Release ${{ env.VERSION }}"
           branch: ${{ github.ref }}
 
+  createProdTagGo:
+    needs: detect-language
+    runs-on: ubuntu-latest
+    if: needs.detect-language.outputs.language == 'go'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.GH_PAT }}
+
+      - name: Set Repo Name
+        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+
+      - name: Set Repo Name in Camel Case
+        run: |
+          repo_name=$(basename ${{ github.repository }})
+          camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
+          echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20' # This will install the latest stable Node.js version
+
+      - name: Log Node and Npm Versions
+        run:  |
+          echo node version $(node -v)
+          echo npm version $(npm -v)
+
+      - name: install semver globally
+        run: npm install -g semver
+
+      - name: Update Version
+        run: |
+          echo "v$(semver -i patch $(sed 's/^v//' VERSION))" > VERSION
+          echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
+
+      - name: Update Chart.yaml version
+        if: ${{ inputs.include_chart }}
+        run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
+
+      - name: Update values.yaml version
+        if: ${{ inputs.include_chart }}
+        run: yq eval -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Prod Release ${{ env.VERSION }}"
+          branch: ${{ github.ref }}
+
+
   buildDeployProdJS:
     needs: [createProdTagJS]
     uses: ./.github/workflows/build-deploy-js.yml
@@ -195,3 +257,25 @@ jobs:
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
+
+  buildDeployProdGo:
+    needs: [createProdTagGo]
+    uses: ./.github/workflows/build-deploy-go.yml
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
+      BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
+    with:
+      env: ${{ inputs.env }}
+      update_version_command: "echo \"v$(semver -i prepatch $(sed 's/^v//' VERSION) --preid=rc)\" > VERSION"
+      rails: '[[ ! "$VERSION" =~ "rc" ]] && [[ ! "$VERSION" =~ "pre" ]]'
+      update_version: true
+      cloud_deploy: ${{ inputs.cloud_deploy }}
+      needs_build: ${{ inputs.needs_build }}
+      install_command: ${{ inputs.install_command }}
+      skip_deploy: ${{ inputs.skip_deploy }}
+      build_command: ${{ inputs.build_command }}
+      needs_docker: ${{ inputs.needs_docker }}
+      include_chart: ${{ inputs.include_chart }}
