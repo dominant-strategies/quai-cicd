@@ -23,6 +23,18 @@ on:
         required: false
         type: string
         default: quai-sandbox
+      build_command:
+        description: 'Command to run to build'
+        type: string
+        required: false
+      needs_docker:
+          required: false
+          type: boolean
+          default: false
+      include_chart:
+          required: false
+          type: boolean
+          default: false
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -98,6 +110,26 @@ jobs:
     with:
       env: ${{ inputs.env }}
       update_version_command: npm version prerelease --preid=rc --no-git-tag-version
+      rails: '[[ ! "$VERSION" =~ "pre" ]]'
+      update_version: true
+      cloud_deploy: ${{ inputs.cloud_deploy }}
+      needs_build: ${{ inputs.needs_build }}
+      install_command: ${{ inputs.install_command }}
+      skip_deploy: ${{ inputs.skip_deploy }}
+
+  buildDeploySandboxGo:
+    needs: detect-language
+    if: github.event.pull_request.merged == true && needs.detect-language.outputs.language == 'go'
+    uses: ./.github/workflows/build-deploy-go.yml
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
+      BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
+    with:
+      env: ${{ inputs.env }}
+      update_version_command: "echo \"v$(semver -i prerelease $(sed 's/^v//' VERSION) --preid=rc)\" > VERSION"
       rails: '[[ ! "$VERSION" =~ "pre" ]]'
       update_version: true
       cloud_deploy: ${{ inputs.cloud_deploy }}

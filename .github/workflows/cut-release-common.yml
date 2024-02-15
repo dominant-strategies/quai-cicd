@@ -278,20 +278,6 @@ jobs:
           camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
           echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
 
-      - name: Set up Go 1.21.1
-        uses: actions/setup-go@v3
-        with:
-          go-version: '1.21.1'
-
-      - name: Check Go Version
-        run: go version
-
-      - name: Install make
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y make
-          make --version
-
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -352,7 +338,7 @@ jobs:
 
       - name: Update Version
         run: |
-          echo "v$(semver -i prerelease $(sed 's/^v//' VERSION) --preid=pre)" > VERSION
+          echo "v$(semver -i preminor $(sed 's/^v//' VERSION) --preid=pre)" > VERSION
           echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
@@ -410,3 +396,28 @@ jobs:
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
+
+  deployReleaseCandidateGo:
+    uses: ./.github/workflows/build-deploy-go.yml
+    needs: [cutReleaseCandidateGo]
+    if: needs.detect-language.outputs.language == 'go'
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
+      BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
+    with:
+      env: ${{ inputs.env }}
+      update_version_command: "echo \"v$(semver -i prerelease $(sed 's/^v//' VERSION) --preid=rc)\" > VERSION"
+      branch: ${{ needs.cutReleaseCandidateJS.outputs.branch }}
+      rails: '[[ "$VERSION" =~ "rc" ]]'
+      update_version: true
+      cloud_deploy: ${{ inputs.cloud_deploy }}
+      needs_build: ${{ inputs.needs_build }}
+      install_command: ${{ inputs.install_command }}
+      skip_deploy: ${{ inputs.skip_deploy }}
+      build_command: ${{ inputs.build_command }}
+      needs_docker: ${{ inputs.needs_docker }}
+      include_chart: ${{ inputs.include_chart }}
+
