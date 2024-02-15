@@ -187,8 +187,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 'node' # This will install the latest stable Node.js version
-          npm-version: 'latest' # This will install the latest npm version
+          node-version: '20' # This will install the latest stable Node.js version
 
       - name: Log Node and Npm Versions
         run:  |
