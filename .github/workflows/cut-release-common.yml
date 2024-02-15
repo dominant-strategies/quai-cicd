@@ -410,7 +410,7 @@ jobs:
     with:
       env: ${{ inputs.env }}
       update_version_command: "echo \"v$(semver -i prerelease $(sed 's/^v//' VERSION) --preid=rc)\" > VERSION"
-      branch: ${{ needs.cutReleaseCandidateJS.outputs.branch }}
+      branch: ${{ needs.cutReleaseCandidateGo.outputs.branch }}
       rails: '[[ "$VERSION" =~ "rc" ]]'
       update_version: true
       cloud_deploy: ${{ inputs.cloud_deploy }}
