@@ -136,3 +136,6 @@ jobs:
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
+      build_command: ${{ inputs.build_command }}
+      needs_docker: ${{ inputs.needs_docker }}
+      include_chart: ${{ inputs.include_chart }}
