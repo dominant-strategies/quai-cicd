@@ -82,19 +82,19 @@ jobs:
           camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
           echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Set up Go 1.21.1
+        uses: actions/setup-go@v3
         with:
-          node-version: 'node' # This will install the latest stable Node.js version
-          npm-version: 'latest' # This will install the latest npm version
+          go-version: '1.21.1'
 
-      - name: Log Node and Npm Versions
-        run:  |
-          echo node version $(node -v)
-          echo npm version $(npm -v)
+      - name: Check Go Version
+        run: go version
 
-      - name: install semver globally
-        run: npm install -g semver
+      - name: Install make
+        run: |
+            sudo apt-get update
+            sudo apt-get install -y make
+            make --version
 
       - name: Install yq
         run: sudo snap install yq
