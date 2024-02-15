@@ -12,6 +12,10 @@ on:
         required: true
         type: boolean
         default: false
+      build_command:
+        description: 'Command to run to build'
+        type: string
+        required: false
       install_command:
         description: 'Command to run to install dependencies'
         type: string
@@ -21,6 +25,14 @@ on:
         type: boolean
         default: false
       skip_deploy:
+        required: false
+        type: boolean
+        default: false
+      include_chart:
+        required: false
+        type: boolean
+        default: false
+      needs_docker:
         required: false
         type: boolean
         default: false
@@ -245,6 +257,117 @@ jobs:
         with:
           commit_message: Rev'd main to Release ${{ env.VERSION }}
           branch: main
+
+  cutReleaseCandidateGo:
+    needs: detect-language
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.set-branch.outputs.branch }}
+    if: needs.detect-language.outputs.language == 'go'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.GH_PAT }}
+
+      - name: Set Repo Name
+        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+
+      - name: Set Repo Name in Camel Case
+        run: |
+          repo_name=$(basename ${{ github.repository }})
+          camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
+          echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
+
+      - name: Set up Go 1.21.1
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.21.1'
+
+      - name: Check Go Version
+        run: go version
+
+      - name: Install make
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+          make --version
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20' # This will install the latest stable Node.js version
+
+      - name: Log Node and Npm Versions
+        run:  |
+          echo node version $(node -v)
+          echo npm version $(npm -v)
+
+      - name: install semver globally
+        run: npm install -g semver
+
+      - name: Debug deploy config
+        run: |
+          echo cloud_deploy: ${{ inputs.cloud_deploy }}
+          echo skip_deploy: ${{ inputs.skip_deploy }}
+          echo env: ${{ inputs.env }}
+
+      - name: Update Version
+        run: |
+          echo "v$(semver -i prerelease $(sed 's/^v//' VERSION) --preid=rc)" > VERSION
+          echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
+
+      - name: Update Chart.yaml version
+        if: ${{ inputs.include_chart }}
+        run: yq eval -P -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
+
+      - name: Update values.yaml version
+        if: ${{ inputs.include_chart }}
+        run: yq eval -P -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
+
+      - name: Update version environment variable
+        run: echo "VERSION=$(echo $VERSION | sed 's/\.[0-9]*-.*//g')" >> $GITHUB_ENV
+
+      - name: Store version in branch variable
+        id: set-branch
+        run: echo "branch=${{ env.VERSION }}" >> $GITHUB_OUTPUT
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Release ${{ env.VERSION }}
+          branch: ${{ env.VERSION }}
+          create_branch: true
+
+      - uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.GH_PAT }}
+
+      - name: Set Repo Name
+        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+
+      - name: Set Repo Name in Camel Case
+        run: |
+          repo_name=$(basename ${{ github.repository }})
+          camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
+          echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
+
+      - name: Update Version
+        run: |
+          echo "v$(semver -i prerelease $(sed 's/^v//' VERSION) --preid=pre)" > VERSION
+          echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
+
+      - name: Update Chart.yaml version
+        if: ${{ inputs.include_chart }}
+        run: yq eval -P -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
+
+      - name: Update values.yaml version
+        if: ${{ inputs.include_chart }}
+        run: yq eval -P -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Rev'd main to Release ${{ env.VERSION }}
+          branch: main
+
 
   deployReleaseCandidateJS:
     uses: ./.github/workflows/build-deploy-js.yml
