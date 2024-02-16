@@ -97,6 +97,7 @@ jobs:
             make --version
 
       - name: Install yq
+        if: ${{ inputs.update_version && inputs.include_chart }}
         run: sudo snap install yq
 
       - name: get Version
@@ -109,9 +110,11 @@ jobs:
         run: ${{ inputs.rails }}
 
       - name: Sync Chart.yaml version
+        if: ${{ inputs.update_version && inputs.include_chart
         run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
 
       - name: Sync values.yaml version
+        if: ${{ inputs.update_version && inputs.include_chart}}
         run: yq eval -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
 
       - name: Install Dependencies
@@ -242,6 +245,7 @@ jobs:
           echo bastion cleaned up 
 
       - name: Install yq
+        if: ${{ inputs.update_version && inputs.include_chart }}
         run: sudo snap install yq
 
       - name: Update Version
