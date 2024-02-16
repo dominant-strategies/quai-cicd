@@ -1,11 +1,10 @@
-name: Test Use of Common Dev Workflow
+name: Test Use of Common Build on PR
 on:
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to use'
-        required: true
-        default: 'main'
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 jobs:
   call-common-workflow:
     uses: dominant-strategies/quai-cicd/.github/workflows/deploy-dev-common.yml@main
@@ -16,7 +15,6 @@ jobs:
       include_chart: false
       cloud_deploy: false
       skip_deploy: true
-
+      update_version: false
     secrets:
       GH_PAT: ${{ secrets.GH_PAT }}
-

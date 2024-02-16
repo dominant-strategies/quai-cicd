@@ -42,10 +42,10 @@ on:
         required: true
       DOCKER:
         description: 'needed for registry login'
-        required: true
+        required: false
       KUBE_CONFIG:
         description: 'needed for kube setup'
-        required: true
+        required: false
       BUILD_ARGS:
         description: 'needed for build args'
         required: false
