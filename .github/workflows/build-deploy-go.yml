@@ -262,7 +262,9 @@ jobs:
       - name: Update Chart.yaml version
         if: ${{ inputs.update_version && inputs.include_chart }}
         run: yq eval -P -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
+
       - name: Update values.yaml version
+        if: ${{ inputs.update_version && inputs.include_chart }}
         run: yq eval -P -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
 
       - name: rm kubeconfig
