@@ -35,16 +35,20 @@ on:
         required: false
         type: string
         default: quai-dev
+      update_version:
+        required: false
+        type: boolean
+        default: true
     secrets:
       GH_PAT:
         description: 'needed for github login'
         required: true
       DOCKER:
         description: 'needed for registry login'
-        required: true
+        required: false
       KUBE_CONFIG:
         description: 'needed for kube setup'
-        required: true
+        required: false
       BUILD_ARGS:
         description: 'needed for build args'
         required: false
@@ -100,7 +104,7 @@ jobs:
     with:
       env: ${{ inputs.env }}
       update_version_command: npm version prerelease --preid=pre --no-git-tag-version
-      update_version: true
+      update_version: ${{ inputs.update_version }}
       cloud_deploy: false
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
@@ -119,7 +123,7 @@ jobs:
     with:
       env: ${{ inputs.env }}
       update_version_command: npm version prerelease --preid=pre --no-git-tag-version
-      update_version: true
+      update_version: ${{ inputs.update_version }}
       cloud_deploy: false
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
@@ -137,7 +141,7 @@ jobs:
     with:
       env: ${{ inputs.env }}
       update_version_command: "echo \"v$(semver -i prerelease $(sed 's/^v//' VERSION) --preid=pre)\" > VERSION"
-      update_version: true
+      update_version: ${{ inputs.update_version }}
       cloud_deploy: false
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
