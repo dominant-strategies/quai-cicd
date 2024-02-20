@@ -409,9 +409,9 @@ jobs:
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
     with:
       env: ${{ inputs.env }}
-      update_version_command: "echo \"v$(semver -i prerelease $(sed 's/^v//' VERSION) --preid=rc)\" > VERSION"
+      update_version_command: :"echo "v$(semver -i patch $(sed 's/^v//' VERSION))" > VERSION"
       branch: ${{ needs.cutReleaseCandidateGo.outputs.branch }}
-      rails: '[[ "$VERSION" =~ "rc" ]]'
+      rails: '[[ ! "$VERSION" =~ "rc" ]]'
       update_version: true
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}
