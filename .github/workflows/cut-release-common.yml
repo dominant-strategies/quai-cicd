@@ -408,7 +408,7 @@ jobs:
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
     with:
       env: ${{ inputs.env }}
-      update_version_command: :"echo "v$(semver -i patch $(sed 's/^v//' VERSION))" > VERSION"
+      update_version_command: "echo \"v$(semver -i patch $(sed 's/^v//' VERSION))\" > VERSION"
       branch: ${{ needs.cutReleaseCandidateGo.outputs.branch }}
       rails: '[[ ! "$VERSION" =~ "rc" ]]'
       update_version: true
