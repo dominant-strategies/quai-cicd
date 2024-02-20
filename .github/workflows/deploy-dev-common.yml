@@ -149,6 +149,7 @@ jobs:
       build_command: ${{ inputs.build_command }}
       needs_docker: ${{ inputs.needs_docker }}
       include_chart: ${{ inputs.include_chart }}
+      tag: false
 
   buildDeployDevElixir:
     needs: detect-language

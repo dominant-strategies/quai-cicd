@@ -46,6 +46,10 @@ on:
           required: false
           type: boolean
           default: false
+      tag:
+          required: false
+          type: boolean
+          default: true
 
     secrets:
       GH_PAT:
@@ -159,7 +163,7 @@ jobs:
         run: docker push quainetwork/${{ env.REPO_NAME }}:${{ env.VERSION }}
 
       - name: git tag
-        if: ${{ inputs.update_version }}
+        if: ${{ inputs.update_version  && inputs.tag }}
         run: git tag ${{ env.VERSION }} && HUSKY=0 git push origin tag ${{ env.VERSION }}
 
       - uses: stefanzweifel/git-auto-commit-action@v4
