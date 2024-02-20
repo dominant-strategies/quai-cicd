@@ -39,6 +39,9 @@ on:
         required: false
         type: boolean
         default: true
+      name_override:
+        required: false
+        type: string
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -109,6 +112,7 @@ jobs:
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
+      name_override: ${{ inputs.name_override }}
 
   buildDeployDevJS:
     needs: detect-language
@@ -128,6 +132,7 @@ jobs:
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
+      name_override: ${{ inputs.name_override }}
 
   buildDeployDevGo:
     needs: detect-language
@@ -151,6 +156,7 @@ jobs:
       include_chart: ${{ inputs.include_chart }}
       rails: '[[ "$VERSION" =~ "pre" ]]'
       tag: false
+      name_override: ${{ inputs.name_override }}
 
   buildDeployDevElixir:
     needs: detect-language

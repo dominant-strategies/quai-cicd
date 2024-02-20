@@ -41,6 +41,9 @@ on:
         required: false
         type: string
         default: 'quai-sandbox'
+      name_override:
+        required: false
+        type: string
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -96,14 +99,21 @@ jobs:
           ssh-key: ${{ secrets.GH_PAT }}
 
       - name: Set Repo Name
-        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+        run: |
+          repo_name=$(basename ${{ github.repository }})
+          if [ -n "${{ inputs.name_override }}" ]; then
+              repo_name=${{ inputs.name_override }}
+          fi
+          echo "REPO_NAME=$repo_name" >> $GITHUB_ENV
 
       - name: Set Repo Name in Camel Case
         run: |
           repo_name=$(basename ${{ github.repository }})
+          if [ -n "${{ inputs.name_override }}" ]; then
+              repo_name=${{ inputs.name_override }}
+          fi
           camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
           echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
-
 
       - name: Install Volta
         run: |
@@ -144,11 +154,19 @@ jobs:
           ssh-key: ${{ secrets.GH_PAT }}
 
       - name: Set Repo Name
-        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+        run: |
+          repo_name=$(basename ${{ github.repository }})
+          if [ -n "${{ inputs.name_override }}" ]; then
+              repo_name=${{ inputs.name_override }}
+          fi
+          echo "REPO_NAME=$repo_name" >> $GITHUB_ENV
 
       - name: Set Repo Name in Camel Case
         run: |
           repo_name=$(basename ${{ github.repository }})
+          if [ -n "${{ inputs.name_override }}" ]; then
+              repo_name=${{ inputs.name_override }}
+          fi
           camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
           echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
 
@@ -183,14 +201,21 @@ jobs:
           ssh-key: ${{ secrets.GH_PAT }}
 
       - name: Set Repo Name
-        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+        run: |
+          repo_name=$(basename ${{ github.repository }})
+          if [ -n "${{ inputs.name_override }}" ]; then
+              repo_name=${{ inputs.name_override }}
+          fi
+          echo "REPO_NAME=$repo_name" >> $GITHUB_ENV
 
       - name: Set Repo Name in Camel Case
         run: |
           repo_name=$(basename ${{ github.repository }})
+          if [ -n "${{ inputs.name_override }}" ]; then
+              repo_name=${{ inputs.name_override }}
+          fi
           camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
           echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
-
 
       - name: Install Volta
         run: |
@@ -231,11 +256,19 @@ jobs:
           ssh-key: ${{ secrets.GH_PAT }}
 
       - name: Set Repo Name
-        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+        run: |
+          repo_name=$(basename ${{ github.repository }})
+          if [ -n "${{ inputs.name_override }}" ]; then
+              repo_name=${{ inputs.name_override }}
+          fi
+          echo "REPO_NAME=$repo_name" >> $GITHUB_ENV
 
       - name: Set Repo Name in Camel Case
         run: |
           repo_name=$(basename ${{ github.repository }})
+          if [ -n "${{ inputs.name_override }}" ]; then
+              repo_name=${{ inputs.name_override }}
+          fi
           camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
           echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
 
@@ -270,11 +303,19 @@ jobs:
           ssh-key: ${{ secrets.GH_PAT }}
 
       - name: Set Repo Name
-        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+        run: |
+          repo_name=$(basename ${{ github.repository }})
+          if [ -n "${{ inputs.name_override }}" ]; then
+              repo_name=${{ inputs.name_override }}
+          fi
+          echo "REPO_NAME=$repo_name" >> $GITHUB_ENV
 
       - name: Set Repo Name in Camel Case
         run: |
           repo_name=$(basename ${{ github.repository }})
+          if [ -n "${{ inputs.name_override }}" ]; then
+              repo_name=${{ inputs.name_override }}
+          fi
           camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
           echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
 
@@ -328,11 +369,19 @@ jobs:
           ssh-key: ${{ secrets.GH_PAT }}
 
       - name: Set Repo Name
-        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+        run: |
+          repo_name=$(basename ${{ github.repository }})
+          if [ -n "${{ inputs.name_override }}" ]; then
+              repo_name=${{ inputs.name_override }}
+          fi
+          echo "REPO_NAME=$repo_name" >> $GITHUB_ENV
 
       - name: Set Repo Name in Camel Case
         run: |
           repo_name=$(basename ${{ github.repository }})
+          if [ -n "${{ inputs.name_override }}" ]; then
+              repo_name=${{ inputs.name_override }}
+          fi
           camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
           echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
 
@@ -374,6 +423,7 @@ jobs:
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
+      name_override: ${{ inputs.name_override }}
 
   deployReleaseCandidateTS:
     uses: ./.github/workflows/build-deploy-ts.yml
@@ -395,6 +445,7 @@ jobs:
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
+      name_override: ${{ inputs.name_override }}
 
   deployReleaseCandidateGo:
     uses: ./.github/workflows/build-deploy-go.yml
@@ -419,4 +470,5 @@ jobs:
       build_command: ${{ inputs.build_command }}
       needs_docker: ${{ inputs.needs_docker }}
       include_chart: ${{ inputs.include_chart }}
+      name_override: ${{ inputs.name_override }}
 

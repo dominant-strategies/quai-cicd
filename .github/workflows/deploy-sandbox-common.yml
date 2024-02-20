@@ -39,6 +39,9 @@ on:
           required: false
           type: boolean
           default: true
+      name_override:
+          required: false
+          type: string
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -100,6 +103,7 @@ jobs:
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
+      name_override: ${{ inputs.name_override }}
 
   buildDeploySandboxTS:
     needs: detect-language
@@ -120,6 +124,7 @@ jobs:
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
+      name_override: ${{ inputs.name_override }}
 
   buildDeploySandboxGo:
     needs: detect-language
@@ -143,3 +148,4 @@ jobs:
       build_command: ${{ inputs.build_command }}
       needs_docker: ${{ inputs.needs_docker }}
       include_chart: ${{ inputs.include_chart }}
+      name_override: ${{ inputs.name_override }}
