@@ -338,7 +338,7 @@ jobs:
 
       - name: Update Version
         run: |
-          echo "v$(semver -i preminor $(sed 's/^v//' VERSION) --preid=pre)" > VERSION
+          echo "v$(semver -i preminor $(sed 's/^v//' VERSION))-pre" > VERSION
           echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
