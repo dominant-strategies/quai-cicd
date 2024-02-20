@@ -35,6 +35,10 @@ on:
           required: false
           type: boolean
           default: false
+      update_version:
+          required: false
+          type: boolean
+          default: true
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -131,7 +135,7 @@ jobs:
       env: ${{ inputs.env }}
       update_version_command: "echo \"v$(semver -i patch $(sed 's/^v//' VERSION))\" > VERSION"
       rails: '[[ ! "$VERSION" =~ "pre" ]]'
-      update_version: true
+      update_version: ${{ inputs.update_version }}
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}
       install_command: ${{ inputs.install_command }}

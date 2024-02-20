@@ -5,10 +5,11 @@ on:
       - opened
       - synchronize
       - reopened
-    branches: [ "main" ]
+    branches:
+      - 'v?[0-9]+.[0-9]+'
 jobs:
   call-common-workflow:
-    uses: dominant-strategies/quai-cicd/.github/workflows/deploy-dev-common.yml@main
+    uses: dominant-strategies/quai-cicd/.github/workflows/deploy-sandbox-common.yml@main
     with:
       needs_build: true
       build_command: "make go-quai"
