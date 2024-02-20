@@ -83,7 +83,7 @@ jobs:
 
   buildDeploySandboxJS:
     needs: detect-language
-    if: github.event.pull_request.merged == true && needs.detect-language.outputs.language == 'javascript'
+    if: needs.detect-language.outputs.language == 'javascript'
     uses: ./.github/workflows/build-deploy-js.yml
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
@@ -103,7 +103,7 @@ jobs:
 
   buildDeploySandboxTS:
     needs: detect-language
-    if: github.event.pull_request.merged == true && needs.detect-language.outputs.language == 'typescript'
+    if: needs.detect-language.outputs.language == 'typescript'
     uses: ./.github/workflows/build-deploy-ts.yml
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
@@ -123,7 +123,7 @@ jobs:
 
   buildDeploySandboxGo:
     needs: detect-language
-    if: github.event.pull_request.merged == true && needs.detect-language.outputs.language == 'go'
+    if: needs.detect-language.outputs.language == 'go'
     uses: ./.github/workflows/build-deploy-go.yml
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
