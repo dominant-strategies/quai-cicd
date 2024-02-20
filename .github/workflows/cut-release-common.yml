@@ -299,7 +299,7 @@ jobs:
 
       - name: Update Version
         run: |
-          echo "v$(semver -i prerelease $(sed 's/^v//' VERSION) --preid=rc)" > VERSION
+          echo "v$(semver -i patch $(sed 's/^v//' VERSION))" > VERSION
           echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
@@ -353,7 +353,6 @@ jobs:
         with:
           commit_message: Rev'd main to Release ${{ env.VERSION }}
           branch: main
-
 
   deployReleaseCandidateJS:
     uses: ./.github/workflows/build-deploy-js.yml
