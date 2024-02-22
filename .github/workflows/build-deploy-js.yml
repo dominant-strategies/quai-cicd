@@ -28,6 +28,9 @@ on:
       needs_build:
         required: true
         type: boolean
+      needs_export:
+        required: false
+        type: boolean
       install_command:
         required: false
         type: string
@@ -130,6 +133,23 @@ jobs:
             eval "$BUILD_ARGS npm run build"
           else
             npm run build
+          fi
+
+      - name: Export
+        if: ${{ inputs.needs_export }}
+        run: |
+          if [ -n "${{ secrets.BUILD_ARGS }}" ]; then
+            BUILD_ARGS=""
+            OLD_IFS=$IFS
+            IFS=','
+            read -ra ARG_ARRAY <<< "${{ secrets.BUILD_ARGS }}"
+            IFS=$OLD_IFS
+            for arg in "${ARG_ARRAY[@]}"; do
+                BUILD_ARGS+=" $arg"
+            done
+            eval "$BUILD_ARGS npm run export"
+          else
+            npm run export
           fi
 
       - name: Debug secrets

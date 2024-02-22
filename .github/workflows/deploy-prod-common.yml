@@ -7,6 +7,10 @@ on:
         required: true
         type: boolean
         default: false
+      needs_export:
+        required: false
+        type: boolean
+        default: false
       install_command:
         description: 'Command to run to install dependencies'
         type: string
@@ -263,6 +267,7 @@ jobs:
       update_version: true
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}
+      needs_export: ${{ inputs.needs_export }}
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
       name_override: ${{ inputs.name_override }}
@@ -283,6 +288,7 @@ jobs:
       update_version: true
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}
+      needs_export: ${{ inputs.needs_export }}
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
       name_override: ${{ inputs.name_override }}

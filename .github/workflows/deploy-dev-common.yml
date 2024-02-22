@@ -7,6 +7,10 @@ on:
         required: true
         type: boolean
         default: false
+      needs_export:
+        required: false
+        type: boolean
+        default: false
       build_command:
         description: 'Command to run to build'
         type: string
@@ -110,6 +114,7 @@ jobs:
       update_version: ${{ inputs.update_version }}
       cloud_deploy: false
       needs_build: ${{ inputs.needs_build }}
+      needs_export: ${{ inputs.needs_export }}
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
       name_override: ${{ inputs.name_override }}
@@ -130,6 +135,7 @@ jobs:
       update_version: ${{ inputs.update_version }}
       cloud_deploy: false
       needs_build: ${{ inputs.needs_build }}
+      needs_export: ${{ inputs.needs_export }}
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
       name_override: ${{ inputs.name_override }}
