@@ -61,7 +61,7 @@ on:
       GPG_PRIVATE_KEY:
         description: 'needed for gpg signing'
         required: false
-      GPG_ID:
+      GPG_KEY_ID:
         description: 'needed for gpg signing'
         required: false
 
@@ -318,7 +318,7 @@ jobs:
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-      GPG_ID: ${{ secrets.GPG_ID }}
+      GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
     with:
       env: ${{ inputs.env }}
       update_version_command: "echo \"v$(semver -i prepatch $(sed 's/^v//' VERSION) --preid=rc)\" > VERSION"
