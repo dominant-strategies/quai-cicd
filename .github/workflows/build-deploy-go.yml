@@ -70,6 +70,12 @@ on:
       DOCKER_BUILD_ARGS:
         description: 'needed for docker build args'
         required: false
+      GPG_PRIVATE_KEY:
+        description: 'needed for gpg key'
+        required: true
+      GPG_KEY_ID:
+        description: 'needed for gpg key'
+        required: true
 
 jobs:
   build:
@@ -202,6 +208,15 @@ jobs:
         with:
           ref: ${{ inputs.branch }}
           ssh-key: ${{ secrets.GH_PAT }}
+
+      - name: Import GPG Key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --import
+          git config --global user.signingkey $GPG_KEY_ID
+          git config --global commit.gpgsign true
 
       - name: Set Repo Name
         run: |

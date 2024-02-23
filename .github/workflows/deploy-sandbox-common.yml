@@ -62,6 +62,12 @@ on:
       DOCKER_BUILD_ARGS:
         description: 'needed for docker build args'
         required: false
+      GPG_PRIVATE_KEY:
+        description: 'needed for gpg signing'
+        required: false
+      GPG_ID:
+        description: 'needed for gpg signing'
+        required: false
 jobs:
   detect-language:
     runs-on: ubuntu-latest
@@ -142,6 +148,8 @@ jobs:
       KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_ID: ${{ secrets.GPG_ID }}
     with:
       env: ${{ inputs.env }}
       update_version_command: "echo \"v$(semver -i patch $(sed 's/^v//' VERSION))\" > VERSION"
