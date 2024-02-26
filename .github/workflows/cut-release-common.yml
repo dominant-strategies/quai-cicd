@@ -320,6 +320,14 @@ jobs:
           echo "$GPG_PRIVATE_KEY" | gpg --import
           git config --global user.signingkey $GPG_KEY_ID
           git config --global commit.gpgsign true
+          
+
+      - name: Verify Key ID
+        run: |
+          # The following command prints the key IDs of all private keys in the keyring
+          # It does not expose private key material
+          gpg --list-secret-keys --keyid-format LONG | grep sec | awk '{print $2}' | cut -d'/' -f2
+      
 
       - name: Set Repo Name
         run: |
