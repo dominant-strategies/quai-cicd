@@ -312,6 +312,14 @@ jobs:
         with:
           ssh-key: ${{ secrets.GH_PAT }}
 
+      - name: Import GPG Key and List Key IDs
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --import
+          # Directly list the keys to see all available information
+          gpg --list-secret-keys --keyid-format LONG
+
       - name: Import GPG Key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
