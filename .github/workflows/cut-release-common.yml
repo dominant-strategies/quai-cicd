@@ -312,14 +312,6 @@ jobs:
         with:
           ssh-key: ${{ secrets.GH_PAT }}
 
-      - name: Import GPG Key and List Key IDs
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-        run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --import
-          # Directly list the keys to see all available information
-          gpg --list-secret-keys --keyid-format LONG
-
       - name: Import GPG Key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -329,14 +321,6 @@ jobs:
           git config --global user.signingkey $GPG_KEY_ID
           git config --global commit.gpgsign true
           
-
-      - name: Verify Key ID
-        run: |
-          # The following command prints the key IDs of all private keys in the keyring
-          # It does not expose private key material
-          gpg --list-secret-keys --keyid-format LONG | grep sec | awk '{print $2}' | cut -d'/' -f2
-      
-
       - name: Set Repo Name
         run: |
           repo_name=$(basename ${{ github.repository }})
