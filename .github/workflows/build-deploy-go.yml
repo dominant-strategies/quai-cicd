@@ -81,22 +81,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Check GPG Private Key
-        run: |
-          if [ -z "${{ secrets.GPG_PRIVATE_KEY }}" ]; then
-            echo "GPG_PRIVATE_KEY is null"
-          else
-            echo "GPG_PRIVATE_KEY is set"
-          fi
-
-      - name: Import GPG Key
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-        run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --import
-          git config --global user.signingkey $GPG_KEY_ID
-          git config --global commit.gpgsign true
+#      - name: Check GPG Private Key
+#        run: |
+#          if [ -z "${{ secrets.GPG_PRIVATE_KEY }}" ]; then
+#            echo "GPG_PRIVATE_KEY is null"
+#          else
+#            echo "GPG_PRIVATE_KEY is set"
+#          fi
+#
+#      - name: Import GPG Key
+#        env:
+#          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+#          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+#        run: |
+#          echo "$GPG_PRIVATE_KEY" | gpg --import
+#          git config --global user.signingkey $GPG_KEY_ID
+#          git config --global commit.gpgsign true
 
       - uses: actions/checkout@v3
         with:
@@ -217,14 +217,14 @@ jobs:
           ref: ${{ inputs.branch }}
           ssh-key: ${{ secrets.GH_PAT }}
 
-      - name: Import GPG Key
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-        run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --import
-          git config --global user.signingkey $GPG_KEY_ID
-          git config --global commit.gpgsign true
+#      - name: Import GPG Key
+#        env:
+#          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+#          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+#        run: |
+#          echo "$GPG_PRIVATE_KEY" | gpg --import
+#          git config --global user.signingkey $GPG_KEY_ID
+#          git config --global commit.gpgsign true
 
       - name: Set Repo Name
         run: |
