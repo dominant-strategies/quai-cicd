@@ -81,6 +81,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Check GPG Private Key
+        run: |
+          if [ -z "${{ secrets.GPG_PRIVATE_KEY }}" ]; then
+            echo "GPG_PRIVATE_KEY is null"
+          else
+            echo "GPG_PRIVATE_KEY is set"
+          fi
+
       - name: Import GPG Key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
