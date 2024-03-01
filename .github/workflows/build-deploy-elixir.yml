@@ -149,6 +149,8 @@ jobs:
         if [ -n "${{ env.TOKEN }}" ]; then
           sed -i 's|token:.*|token: ${{ env.TOKEN }}|' ${{ github.workspace }}/kubeconfig
         fi
+        ## set kubeconfig contents to env variable in gh
+        echo "KUBECONFIG=$(< ${{ github.workspace }}/kubeconfig)" >> $GITHUB_ENV
       shell: bash
 
     - name: Deploy to cloud
@@ -158,7 +160,7 @@ jobs:
       continue-on-error: true
       with:
         exec: helm upgrade ${{ env.REPO_NAME }} ./helm --install --namespace=${{ inputs.env }} --values=./helm/env/${{ inputs.env }}.values.yaml
-        kubeconfig: ${{ github.workspace }}/kubeconfig
+        kubeconfig: ${{ env.KUBECONFIG }}
 
     - name: Deploy to local from bastion
       if: ${{ !inputs.cloud_deploy && !inputs.skip_deploy }}
