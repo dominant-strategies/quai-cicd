@@ -42,6 +42,12 @@ on:
       name_override:
           required: false
           type: string
+      gcp_project_id:
+        required: false
+        type: string
+      token_secret_name:
+        required: false
+        type: string
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -63,6 +69,9 @@ on:
         required: false
       GPG_KEY_ID:
         description: 'needed for gpg signing'
+        required: false
+      GH_GCP_TOKEN:
+        description: 'needed for gcp login'
         required: false
 
 jobs:
@@ -275,6 +284,7 @@ jobs:
       KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
+      GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
     with:
       env: ${{ inputs.env }}
       update_version_command: npm version prepatch --preid=rc --no-git-tag-version
@@ -286,6 +296,8 @@ jobs:
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
       name_override: ${{ inputs.name_override }}
+      gcp_project_id: ${{ inputs.gcp_project_id }}
+      token_secret_name: ${{ inputs.token_secret_name }}
 
   buildDeployProdTS:
     needs: [createProdTagTS]
@@ -296,6 +308,7 @@ jobs:
       KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
+      GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
     with:
       env: ${{ inputs.env }}
       update_version_command: npm version prepatch --preid=rc --no-git-tag-version
@@ -307,6 +320,8 @@ jobs:
       install_command: ${{ inputs.install_command }}
       skip_deploy: ${{ inputs.skip_deploy }}
       name_override: ${{ inputs.name_override }}
+      gcp_project_id: ${{ inputs.gcp_project_id }}
+      token_secret_name: ${{ inputs.token_secret_name }}
 
   buildDeployProdGo:
     needs: [createProdTagGo]
@@ -319,6 +334,7 @@ jobs:
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
       GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+      GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
     with:
       env: ${{ inputs.env }}
       update_version_command: "echo \"v$(semver -i prepatch $(sed 's/^v//' VERSION) --preid=rc)\" > VERSION"
@@ -332,3 +348,5 @@ jobs:
       needs_docker: ${{ inputs.needs_docker }}
       include_chart: ${{ inputs.include_chart }}
       name_override: ${{ inputs.name_override }}
+      gcp_project_id: ${{ inputs.gcp_project_id }}
+      token_secret_name: ${{ inputs.token_secret_name }}

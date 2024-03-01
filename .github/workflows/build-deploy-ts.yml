@@ -41,6 +41,12 @@ on:
       name_override:
         required: false
         type: string
+      gcp_project_id:
+        required: false
+        type: string
+      token_secret_name:
+        required: false
+        type: string
 
     secrets:
       GH_PAT:
@@ -57,6 +63,9 @@ on:
         required: false
       DOCKER_BUILD_ARGS:
         description: 'needed for docker build args'
+        required: false
+      GH_GCP_TOKEN:
+        description: 'needed for gcp login'
         required: false
 
 jobs:
@@ -202,6 +211,22 @@ jobs:
           ref: ${{ inputs.branch }}
           ssh-key: ${{ secrets.GH_PAT }}
 
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GH_GCP_TOKEN }}
+          export_default_credentials: true
+
+      - name: Access Secret from Secret Manager
+        if: ${{ !inputs.skip_deploy && secrets.GH_GCP_TOKEN && inputs.gcp_project_id && inputs.token_secret_name }}
+        run: |
+          SECRET_NAME="${{ inputs.token_secret_name }}"  # The name of your secret in Secret Manager
+          PROJECT_ID="${{ inputs.gcp_project_id }}"    # Your GCP project ID
+          # Retrieve the secret value
+          SECRET_VALUE=$(gcloud secrets versions access latest --secret="${SECRET_NAME}" --project="${PROJECT_ID}")
+          # set the secret value as an environment variable
+          echo "TOKEN=$SECRET_VALUE" >> $GITHUB_ENV
+
       - name: Set Repo Name
         run: |
           repo_name=$(basename ${{ github.repository }})
@@ -231,6 +256,15 @@ jobs:
           echo node version $(node -v)
           echo npm version $(npm -v)
 
+      - name: Prepare KUBE_CONFIG
+        if: ${{ !inputs.skip_deploy && inputs.cloud_deploy }}
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" > ${{ github.workspace }}/kubeconfig
+          if [ -n "${{ env.TOKEN }}" ]; then
+            sed -i 's|token:.*|token: ${{ env.TOKEN }}|' ${{ github.workspace }}/kubeconfig
+          fi
+        shell: bash
+
       - name: Deploy to cloud
         uses: WyriHaximus/github-action-helm3@v2
         if: ${{ inputs.cloud_deploy && !inputs.skip_deploy }}
@@ -238,7 +272,7 @@ jobs:
         continue-on-error: true
         with:
           exec: helm upgrade ${{ env.REPO_NAME }} ./helm --install --namespace=${{ inputs.env }} --values=./helm/env/${{ inputs.env }}.values.yaml
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+          kubeconfig: ${{ github.workspace }}/kubeconfig
 
       - name: Deploy to local from bastion
         if: ${{ !inputs.cloud_deploy && !inputs.skip_deploy }}
@@ -251,6 +285,9 @@ jobs:
           echo kubectl installed
           echo setting kubeconfig...
           echo "${{ secrets.KUBE_CONFIG }}" > kubeconfig.yaml
+          if [ -n "${{ env.TOKEN }}" ]; then
+            sed -i 's|token:.*|token: ${{ env.TOKEN }}|' kubeconfig.yaml
+          fi
           export KUBECONFIG=kubeconfig.yaml
           echo kubeconfig set
           echo testing kubectl connection...
