@@ -212,14 +212,14 @@ jobs:
           ssh-key: ${{ secrets.GH_PAT }}
 
       - name: Setup Cloud SDK
-        if: ${{ -n inputs.token_secret_name }}
+        if: ${{ inputs.token_secret_name != '' }}
         uses: google-github-actions/setup-gcloud@v2.0.0
         with:
           service_account_key: ${{ secrets.GH_GCP_TOKEN }}
           export_default_credentials: true
 
       - name: Access Secret from Secret Manager
-        if: ${{ !inputs.skip_deploy && -n inputs.gcp_project_id && -n inputs.token_secret_name }}
+        if: ${{ !inputs.skip_deploy && inputs.gcp_project_id != '' && inputs.token_secret_name != '' }}
         run: |
           SECRET_NAME="${{ inputs.token_secret_name }}"  # The name of your secret in Secret Manager
           PROJECT_ID="${{ inputs.gcp_project_id }}"    # Your GCP project ID
