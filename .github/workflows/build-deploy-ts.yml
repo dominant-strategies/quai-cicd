@@ -213,7 +213,7 @@ jobs:
 
       - name: Setup Cloud SDK
         if: ${{ secrets.GH_GCP_TOKEN }}
-        uses: google-github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@v2.0.0
         with:
           service_account_key: ${{ secrets.GH_GCP_TOKEN }}
           export_default_credentials: true
