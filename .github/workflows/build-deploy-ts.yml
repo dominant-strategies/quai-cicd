@@ -212,6 +212,7 @@ jobs:
           ssh-key: ${{ secrets.GH_PAT }}
 
       - name: Setup Cloud SDK
+        if: ${{ secrets.GH_GCP_TOKEN }}
         uses: google-github-actions/setup-gcloud@master
         with:
           service_account_key: ${{ secrets.GH_GCP_TOKEN }}
