@@ -218,7 +218,7 @@ jobs:
           export_default_credentials: true
 
       - name: Access Secret from Secret Manager
-        if: ${{ !inputs.skip_deploy && secrets.GH_GCP_TOKEN && inputs.gcp_project_id && inputs.token_secret_name }}
+        if: ${{ !inputs.skip_deploy && inputs.gcp_project_id && inputs.token_secret_name }}
         run: |
           SECRET_NAME="${{ inputs.token_secret_name }}"  # The name of your secret in Secret Manager
           PROJECT_ID="${{ inputs.gcp_project_id }}"    # Your GCP project ID
