@@ -311,7 +311,7 @@ jobs:
         id: deploy
         continue-on-error: true
         with:
-          exec: helm upgrade ${{ env.REPO_NAME }} ./.helm/app/ --install --wait --atomic --namespace=${{ inputs.env }} --values=./.helm/app/values.yaml
+          exec: helm upgrade ${{ env.REPO_NAME }} ./helm --install --namespace=${{ inputs.env }} --values=./helm/env/${{ inputs.env }}.values.yaml
           kubeconfig: ${{ env.KUBECONFIG_CONTENT }}
 
       - name: Deploy to local from bastion
