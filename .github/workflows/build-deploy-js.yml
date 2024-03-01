@@ -212,11 +212,13 @@ jobs:
           ssh-key: ${{ secrets.GH_PAT }}
 
       - name: Authenticate to Google Cloud
+        if: ${{ !inputs.skip_deploy && inputs.gcp_project_id != '' && inputs.token_secret_name != '' }}
         uses: google-github-actions/auth@v0.4.0  # Use the latest version available
         with:
           credentials_json: ${{ secrets.GH_GCP_TOKEN }}
 
       - name: Setup Cloud SDK
+        if: ${{ !inputs.skip_deploy && inputs.gcp_project_id != '' && inputs.token_secret_name != '' }}
         uses: google-github-actions/setup-gcloud@v2.0.0
 
       - name: Access Secret from Secret Manager
