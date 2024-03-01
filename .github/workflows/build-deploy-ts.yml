@@ -281,7 +281,6 @@ jobs:
         with:
           exec: helm upgrade ${{ env.REPO_NAME }} ./.helm/app/ --install --wait --atomic --namespace=${{ inputs.env }} --values=./.helm/app/values.yaml
           kubeconfig: ${{ env.KUBECONFIG_CONTENT }}
-          overrule_existing_kubeconfig: 'true'
 
       - name: Deploy to local from bastion
         if: ${{ !inputs.cloud_deploy && !inputs.skip_deploy }}
