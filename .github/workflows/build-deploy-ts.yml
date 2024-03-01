@@ -262,6 +262,7 @@ jobs:
         id: prepare_kubeconfig
         if: ${{ !inputs.skip_deploy && inputs.cloud_deploy }}
         run: |
+          mkdir -p ~/.kube
           echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
           if [ -n "${{ env.TOKEN }}" ]; then
             sed -i 's|token:.*|token: ${{ env.TOKEN }}|' ~/.kube/config
