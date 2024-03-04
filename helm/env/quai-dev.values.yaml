@@ -1,3 +1,3 @@
-testCicd:
+quaiCicd:
   env: "quai-dev"
   cloud: false

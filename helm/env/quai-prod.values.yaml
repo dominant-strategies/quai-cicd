@@ -1,4 +1,4 @@
-testCicd:
+quaiCicd:
   env: "quai-prod"
   replicas: 3
   cloud: true

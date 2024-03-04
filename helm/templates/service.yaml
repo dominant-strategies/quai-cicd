@@ -1,11 +1,11 @@
-{{- $name := include "test-cicd.name" . -}}
+{{- $name := include "quai-cicd.name" . -}}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ $name }}
-  namespace: {{ .Values.testCicd.env }}
+  namespace: {{ .Values.quaiCicd.env }}
   annotations:
-    cloud.google.com/backend-config: {{ printf "{\"default\":\"%s\"}" (include "test-cicd.name" $) | toRawJson }}
+    cloud.google.com/backend-config: {{ printf "{\"default\":\"%s\"}" (include "quai-cicd.name" $) | toRawJson }}
 spec:
   ports:
   - name: http

@@ -5,10 +5,10 @@ metadata:
   labels:
     app: {{ $name }}
   name: {{ $name }}
-  namespace: {{ .Values.testCicd.env }}
+  namespace: {{ .Values.quaiCicd.env }}
 spec:
   progressDeadlineSeconds: 600
-  replicas: {{ .Values.testCicd.replicas }}
+  replicas: {{ .Values.quaiCicd.replicas }}
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -19,10 +19,10 @@ spec:
         app: {{ $name }}
     spec:
       containers:
-      - image: {{ .Values.testCicd.image.name -}}:{{- .Values.testCicd.image.version }}
+      - image: {{ .Values.quaiCicd.image.name -}}:{{- .Values.quaiCicd.image.version }}
         env:
         - name: NODE_ENV
-          value: {{ .Values.testCicd.env }}
+          value: {{ .Values.quaiCicd.env }}
         - name: NODE_CONFIG
           valueFrom:
             secretKeyRef:
