@@ -12,6 +12,10 @@ jobs:
       skip_deploy: false
       update_version: false
     secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      BUILD_ARGS: ''
+      DOCKER_BUILD_ARGS: ''
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_PROD }}
       GH_PAT: ${{ secrets.GH_PAT }}
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY2 }}
       GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
