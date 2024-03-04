@@ -24,3 +24,4 @@ jobs:
       GH_PAT: ${{ secrets.GH_PAT }}
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY2 }}
       GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+      GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
