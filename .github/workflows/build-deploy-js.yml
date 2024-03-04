@@ -68,6 +68,12 @@ on:
       DOCKER_BUILD_ARGS:
           description: 'needed for docker build args'
           required: false
+      GPG_PRIVATE_KEY:
+        description: 'needed for gpg key'
+        required: true
+      GPG_KEY_ID:
+        description: 'needed for gpg key'
+        required: true
       GH_GCP_TOKEN:
         description: 'needed for gcp login'
         required: false

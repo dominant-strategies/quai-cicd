@@ -121,6 +121,15 @@ jobs:
         with:
           ssh-key: ${{ secrets.GH_PAT }}
 
+      - name: Import GPG Key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --import
+          git config --global user.signingkey $GPG_KEY_ID
+          git config --global commit.gpgsign true
+
       - name: Install jq
         if: ${{ inputs.update_version }}
         run: sudo apt-get update && sudo apt-get install -y jq
@@ -234,6 +243,15 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ssh-key: ${{ secrets.GH_PAT }}
+
+      - name: Import GPG Key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --import
+          git config --global user.signingkey $GPG_KEY_ID
+          git config --global commit.gpgsign true
 
       - name: Install jq
         if: ${{ inputs.update_version }}
@@ -471,6 +489,8 @@ jobs:
       KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
       GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
 
     with:
@@ -501,6 +521,8 @@ jobs:
       KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
       GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
 
     with:

@@ -123,6 +123,8 @@ jobs:
       KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
       GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
     with:
       env: ${{ inputs.env }}
@@ -148,6 +150,8 @@ jobs:
       KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
       BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
       GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
     with:
       env: ${{ inputs.env }}
