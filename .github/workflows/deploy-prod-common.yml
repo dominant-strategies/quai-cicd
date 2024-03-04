@@ -304,8 +304,7 @@ jobs:
           commit_message: "Prod Release ${{ env.VERSION }}"
           branch: ${{ github.ref }}
 
-
-  buildDeployProdJS:
+  buildDeploySandboxJS:
     needs: [createProdTagJS]
     uses: ./.github/workflows/build-deploy-js.yml
     secrets:
@@ -319,8 +318,8 @@ jobs:
       GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
     with:
       env: ${{ inputs.env }}
-      update_version_command: npm version prepatch --preid=rc --no-git-tag-version
-      rails: '[[ ! "$VERSION" =~ "rc" ]] && [[ ! "$VERSION" =~ "pre" ]]'
+      update_version_command: "jq --arg new_version \"v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))\" '.version = $new_version' package.json > temp.json && mv temp.json package.json"
+      rails: '[[ ! "$VERSION" =~ "pre" ]]'
       update_version: ${{ inputs.update_version }}
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}
@@ -332,7 +331,7 @@ jobs:
       token_secret_name: ${{ inputs.token_secret_name }}
       needs_docker: ${{ inputs.needs_docker }}
 
-  buildDeployProdTS:
+  buildDeploySandboxTS:
     needs: [createProdTagTS]
     uses: ./.github/workflows/build-deploy-ts.yml
     secrets:
@@ -346,8 +345,8 @@ jobs:
       GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
     with:
       env: ${{ inputs.env }}
-      update_version_command: npm version prepatch --preid=rc --no-git-tag-version
-      rails: '[[ ! "$VERSION" =~ "rc" ]] && [[ ! "$VERSION" =~ "pre" ]]'
+      update_version_command: "jq --arg new_version \"v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))\" '.version = $new_version' package.json > temp.json && mv temp.json package.json"
+      rails: '[[ ! "$VERSION" =~ "pre" ]]'
       update_version: ${{ inputs.update_version }}
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}

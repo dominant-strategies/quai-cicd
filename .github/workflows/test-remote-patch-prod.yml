@@ -1,8 +1,14 @@
-name: Test Use of Common Prod Workflow
-on: workflow_dispatch
+name: Test Use of Common Patch Workflow
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to use'
+        required: true
+        default: 'main'
 jobs:
   call-common-workflow:
-    uses: dominant-strategies/quai-cicd/.github/workflows/deploy-prod-common.yml@main
+    uses: dominant-strategies/quai-cicd/.github/workflows/deploy-sandbox-common.yml@main
     with:
       needs_build: true
       build_command: "npm run build"
@@ -18,7 +24,7 @@ jobs:
       DOCKER: ${{ secrets.DOCKER }}
       BUILD_ARGS: ''
       DOCKER_BUILD_ARGS: ''
-      KUBE_CONFIG: ${{ secrets.KUBECONFIG_PROD }}
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_SANDBOX }}
       GH_PAT: ${{ secrets.GH_PAT }}
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY2 }}
       GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
