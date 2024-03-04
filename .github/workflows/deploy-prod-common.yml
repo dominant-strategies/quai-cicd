@@ -157,8 +157,8 @@ jobs:
         if: ${{ inputs.update_version }}
         run: |
           jq --arg new_version "v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))" '.version = $new_version' package.json > temp.json && mv temp.json package.json
-          NEW_VERSION = $(jq -r '.version' package.json)
-            echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          NEW_VERSION=$(jq -r '.version' package.json)
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
         run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
@@ -224,8 +224,8 @@ jobs:
         if: ${{ inputs.update_version }}
         run: |
           jq --arg new_version "v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))" '.version = $new_version' package.json > temp.json && mv temp.json package.json
-          NEW_VERSION = $(jq -r '.version' package.json)
-            echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          NEW_VERSION=$(jq -r '.version' package.json)
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
         run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
