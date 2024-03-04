@@ -1,0 +1,8 @@
+{
+  "name": "sample-js-project",
+  "version": "v1.13.1",
+  "scripts": {
+    "build": "echo 'Building JS project...' && echo $BUILD_ENV"
+  },
+  "dependencies": {}
+}

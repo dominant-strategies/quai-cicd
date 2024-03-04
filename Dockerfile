@@ -1,10 +1,16 @@
-FROM golang:1.17
+FROM node:14
 
 WORKDIR /app
 
 COPY ./ .
 
-RUN go build -o main .
+ARG BUILD_ENV
 
-CMD ["./main"]
+RUN echo building $BUILD_ENV
+
+RUN npm install
+
+RUN BUILD_ENV=$BUILD_ENV npm run build
+
+CMD ["npm", "start"]
 

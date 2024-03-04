@@ -54,6 +54,10 @@ on:
       token_secret_name:
         required: false
         type: string
+      update_version:
+        required: false
+        type: boolean
+        default: true
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -117,6 +121,10 @@ jobs:
         with:
           ssh-key: ${{ secrets.GH_PAT }}
 
+      - name: Install jq
+        if: ${{ inputs.update_version }}
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Set Repo Name
         run: |
           repo_name=$(basename ${{ github.repository }})
@@ -144,10 +152,16 @@ jobs:
           echo node version $(node -v)
           echo npm version $(npm -v)
 
+      - name: install semver globally
+        if: ${{ inputs.update_version }}
+        run: npm install -g semver
+
       - name: Update Version
+        if: ${{ inputs.update_version }}
         run: |
-          NEW_VERSION=$(npm version prerelease --preid=rc --no-git-tag-version | sed 's/^v//')
-          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          jq --arg new_version "v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))" '.version = $new_version' package.json > temp.json && mv temp.json package.json
+          NEW_VERSION = $(jq -r '.version' package.json)
+            echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
         run: yq eval -P -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
@@ -190,9 +204,11 @@ jobs:
           echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
 
       - name: Update Version
+        if: ${{ inputs.update_version }}
         run: |
-          NEW_VERSION=$(npm version preminor --preid=pre --no-git-tag-version | sed 's/^v//')
-          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          jq --arg new_version "v$(semver -i minor $(jq -r '.version' package.json | sed 's/^v//;s/-pre$//'))-pre" '.version = $new_version' package.json > temp.json && mv temp.json package.json
+          NEW_VERSION = $(jq -r '.version' package.json)
+            echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Sync package-lock.json
         run: npm i --package-lock-only --ignore-scripts
@@ -219,6 +235,10 @@ jobs:
         with:
           ssh-key: ${{ secrets.GH_PAT }}
 
+      - name: Install jq
+        if: ${{ inputs.update_version }}
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Set Repo Name
         run: |
           repo_name=$(basename ${{ github.repository }})
@@ -246,10 +266,16 @@ jobs:
           echo node version $(node -v)
           echo npm version $(npm -v)
 
+      - name: install semver globally
+        if: ${{ inputs.update_version }}
+        run: npm install -g semver
+
       - name: Update Version
+        if: ${{ inputs.update_version }}
         run: |
-          NEW_VERSION=$(npm version prerelease --preid=rc --no-git-tag-version | sed 's/^v//')
-          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          jq --arg new_version "v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))" '.version = $new_version' package.json > temp.json && mv temp.json package.json
+          NEW_VERSION = $(jq -r '.version' package.json)
+            echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
         run: yq eval -P -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
@@ -292,9 +318,11 @@ jobs:
           echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
 
       - name: Update Version
+        if: ${{ inputs.update_version }}
         run: |
-          NEW_VERSION=$(npm version preminor --preid=pre --no-git-tag-version | sed 's/^v//')
-          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          jq --arg new_version "v$(semver -i minor $(jq -r '.version' package.json | sed 's/^v//;s/-pre$//'))-pre" '.version = $new_version' package.json > temp.json && mv temp.json package.json
+          NEW_VERSION = $(jq -r '.version' package.json)
+            echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Sync package-lock.json
         run: npm i --package-lock-only --ignore-scripts
@@ -367,6 +395,7 @@ jobs:
           echo env: ${{ inputs.env }}
 
       - name: Update Version
+        if: ${{ inputs.update_version }}
         run: |
           echo "v$(semver -i patch $(sed 's/^v//' VERSION))" > VERSION
           echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
@@ -414,6 +443,7 @@ jobs:
           echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
 
       - name: Update Version
+        if: ${{ inputs.update_version }}
         run: |
           echo "v$(semver -i minor $(cat VERSION | sed 's/^v//;s/-pre$//'))-pre" > VERSION
           echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
@@ -445,9 +475,9 @@ jobs:
 
     with:
       env: ${{ inputs.env }}
-      update_version_command: npm version prerelease --preid=rc --no-git-tag-version
+      update_version_command: "jq --arg new_version \"v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))\" '.version = $new_version' package.json > temp.json && mv temp.json package.json"
       branch: ${{ needs.cutReleaseCandidateJS.outputs.branch }}
-      rails: '[[ "$VERSION" =~ "rc" ]]'
+      rails: '[[ ! "$VERSION" =~ "rc" ]]'
       update_version: true
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}
@@ -474,9 +504,9 @@ jobs:
 
     with:
       env: ${{ inputs.env }}
-      update_version_command: npm version prerelease --preid=rc --no-git-tag-version
+      update_version_command: "jq --arg new_version \"v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))\" '.version = $new_version' package.json > temp.json && mv temp.json package.json"
       branch: ${{ needs.cutReleaseCandidateTS.outputs.branch }}
-      rails: '[[ "$VERSION" =~ "rc" ]]'
+      rails: '[[ ! "$VERSION" =~ "rc" ]]'
       update_version: true
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}

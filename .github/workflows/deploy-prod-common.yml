@@ -48,6 +48,10 @@ on:
       token_secret_name:
         required: false
         type: string
+      update_version:
+        required: false
+        type: boolean
+        default: true
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -109,6 +113,15 @@ jobs:
         with:
           ssh-key: ${{ secrets.GH_PAT }}
 
+      - name: Import GPG Key
+        if: ${{ inputs.update_version }}
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --import
+          git config --global user.signingkey $GPG_KEY_ID
+
       - name: Set Repo Name
         run: |
           repo_name=$(basename ${{ github.repository }})
@@ -136,12 +149,16 @@ jobs:
           echo node version $(node -v)
           echo npm version $(npm -v)
 
+      - name: install semver globally
+        if: ${{ inputs.update_version }}
+        run: npm install -g semver
+
       - name: Update Version
+        if: ${{ inputs.update_version }}
         run: |
-          npm version patch --no-git-tag-version
-          VERSION_VALUE=$(sudo yq eval '.version' package.json | head -n 1)
-          echo "VERSION=$VERSION_VALUE"
-          echo "VERSION=$VERSION_VALUE" >> $GITHUB_ENV
+          jq --arg new_version "v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))" '.version = $new_version' package.json > temp.json && mv temp.json package.json
+          NEW_VERSION = $(jq -r '.version' package.json)
+            echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
         run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
@@ -163,6 +180,15 @@ jobs:
         with:
           ssh-key: ${{ secrets.GH_PAT }}
 
+      - name: Import GPG Key
+        if: ${{ inputs.update_version }}
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --import
+          git config --global user.signingkey $GPG_KEY_ID
+
       - name: Set Repo Name
         run: |
           repo_name=$(basename ${{ github.repository }})
@@ -190,12 +216,16 @@ jobs:
           echo node version $(node -v)
           echo npm version $(npm -v)
 
+      - name: install semver globally
+        if: ${{ inputs.update_version }}
+        run: npm install -g semver
+
       - name: Update Version
+        if: ${{ inputs.update_version }}
         run: |
-          npm version patch --no-git-tag-version
-          VERSION_VALUE=$(sudo yq eval '.version' package.json | head -n 1)
-          echo "VERSION=$VERSION_VALUE"
-          echo "VERSION=$VERSION_VALUE" >> $GITHUB_ENV
+          jq --arg new_version "v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))" '.version = $new_version' package.json > temp.json && mv temp.json package.json
+          NEW_VERSION = $(jq -r '.version' package.json)
+            echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
         run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
@@ -289,7 +319,7 @@ jobs:
       env: ${{ inputs.env }}
       update_version_command: npm version prepatch --preid=rc --no-git-tag-version
       rails: '[[ ! "$VERSION" =~ "rc" ]] && [[ ! "$VERSION" =~ "pre" ]]'
-      update_version: true
+      update_version: {{ inputs.update_version }}}
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}
       needs_export: ${{ inputs.needs_export }}
@@ -313,7 +343,7 @@ jobs:
       env: ${{ inputs.env }}
       update_version_command: npm version prepatch --preid=rc --no-git-tag-version
       rails: '[[ ! "$VERSION" =~ "rc" ]] && [[ ! "$VERSION" =~ "pre" ]]'
-      update_version: true
+      update_version: {{ inputs.update_version }}}
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}
       needs_export: ${{ inputs.needs_export }}

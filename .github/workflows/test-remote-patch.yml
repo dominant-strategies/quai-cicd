@@ -1,4 +1,4 @@
-name: Test Use of Common Dev Workflow
+name: Test Use of Common Cut Release Workflow
 on:
   workflow_dispatch:
     inputs:
@@ -8,18 +8,16 @@ on:
         default: 'main'
 jobs:
   call-common-workflow:
-    uses: dominant-strategies/quai-cicd/.github/workflows/deploy-dev-common.yml@main
+    uses: dominant-strategies/quai-cicd/.github/workflows/deploy-sandbox-common.yml@main
     with:
       needs_build: true
       build_command: "npm run build"
-      needs_docker: false
-      include_chart: false
-      cloud_deploy: false
-      skip_deploy: true
-      update_version: false
-
+      needs_docker: true
+      include_chart: true
+      cloud_deploy: true
+      skip_deploy: false
+      update_version: true
     secrets:
       GH_PAT: ${{ secrets.GH_PAT }}
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY2 }}
       GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-
