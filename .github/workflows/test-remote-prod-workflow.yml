@@ -11,6 +11,9 @@ jobs:
       cloud_deploy: true
       skip_deploy: false
       update_version: false
+      env: "quai-prod"
+      gcp_project_id: "flash-gasket-349320"
+      token_secret_name: "gke-prod-token"
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
       BUILD_ARGS: ''

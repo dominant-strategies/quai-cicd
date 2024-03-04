@@ -18,6 +18,9 @@ jobs:
       cloud_deploy: true
       skip_deploy: false
       update_version: true
+      env: "quai-sandbox"
+      gcp_project_id: "flash-gasket-349320"
+      token_secret_name: "gke-sandbox-token"
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
       BUILD_ARGS: ''
