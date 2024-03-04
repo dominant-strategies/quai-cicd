@@ -16,7 +16,7 @@ jobs:
       needs_docker: true
       include_chart: true
       cloud_deploy: true
-      skip_deploy: true
+      skip_deploy: false
       update_version: true
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
