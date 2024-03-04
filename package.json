@@ -2,7 +2,7 @@
   "name": "sample-js-project",
   "version": "v1.26.0-pre",
   "scripts": {
-    "build": "echo 'Building JS project...' && echo $BUILD_ENV"
+    "build": "echo 'Building JS project... ' && echo $BUILD_ENV"
   },
   "dependencies": {}
 }
