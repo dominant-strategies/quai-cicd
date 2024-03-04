@@ -39,7 +39,7 @@ on:
       needs_docker:
         required: false
         type: boolean
-        default: false
+        default: true
       env:
         description: 'Deployment namespace/environment'
         required: false
@@ -487,6 +487,7 @@ jobs:
       name_override: ${{ inputs.name_override }}
       gcp_project_id: ${{ inputs.gcp_project_id }}
       token_secret_name: ${{ inputs.token_secret_name }}
+      needs_docker: ${{ inputs.needs_docker }}
 
 
 
@@ -516,6 +517,7 @@ jobs:
       name_override: ${{ inputs.name_override }}
       gcp_project_id: ${{ inputs.gcp_project_id }}
       token_secret_name: ${{ inputs.token_secret_name }}
+      needs_docker: ${{ inputs.needs_docker }}
 
   deployReleaseCandidateGo:
     uses: ./.github/workflows/build-deploy-go.yml

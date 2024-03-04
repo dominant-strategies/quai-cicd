@@ -47,6 +47,10 @@ on:
       token_secret_name:
         required: false
         type: string
+      needs_docker:
+        required: false
+        type: boolean
+        default: true
 
     secrets:
       GH_PAT:
@@ -181,6 +185,7 @@ jobs:
           password: ${{ secrets.DOCKER }}
 
       - name: Build Docker
+        if: ${{ inputs.needs_docker }}
         run: |
           if [ -n "${{ secrets.DOCKER_BUILD_ARGS }}" ]; then
             BUILD_ARGS=""
@@ -198,6 +203,7 @@ jobs:
 
 
       - name: Push to Docker Hub
+        if: ${{ inputs.needs_docker }}
         run: docker push quainetwork/${{ env.REPO_NAME }}:${{ env.VERSION }}
 
       - name: git tag
