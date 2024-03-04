@@ -1,4 +1,4 @@
-name: Test Use of Common Cut Release Workflow
+name: Test Use of Common Patch Workflow
 on:
   workflow_dispatch:
     inputs:
