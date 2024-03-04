@@ -129,6 +129,7 @@ jobs:
       name_override: ${{ inputs.name_override }}
       gcp_project_id: ${{ inputs.gcp_project_id }}
       token_secret_name: ${{ inputs.token_secret_name }}
+      needs_docker: ${{ inputs.needs_docker }}
 
   buildDeploySandboxTS:
     needs: detect-language
@@ -156,6 +157,7 @@ jobs:
       name_override: ${{ inputs.name_override }}
       gcp_project_id: ${{ inputs.gcp_project_id }}
       token_secret_name: ${{ inputs.token_secret_name }}
+      needs_docker: ${{ inputs.needs_docker }}
 
   buildDeploySandboxGo:
     needs: detect-language
