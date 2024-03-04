@@ -1,11 +1,5 @@
 name: Test Use of Common Patch Workflow
-on:
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to use'
-        required: true
-        default: 'main'
+on: workflow_dispatch
 jobs:
   call-common-workflow:
     uses: dominant-strategies/quai-cicd/.github/workflows/deploy-sandbox-common.yml@main
