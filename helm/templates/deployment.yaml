@@ -1,4 +1,4 @@
-{{- $name := include "test-cicd.name" . -}}
+{{- $name := include "quai-cicd.name" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
