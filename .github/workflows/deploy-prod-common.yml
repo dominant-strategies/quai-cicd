@@ -321,7 +321,7 @@ jobs:
       env: ${{ inputs.env }}
       update_version_command: npm version prepatch --preid=rc --no-git-tag-version
       rails: '[[ ! "$VERSION" =~ "rc" ]] && [[ ! "$VERSION" =~ "pre" ]]'
-      update_version: ${{ inputs.update_version }}}
+      update_version: ${{ inputs.update_version }}
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}
       needs_export: ${{ inputs.needs_export }}
@@ -348,7 +348,7 @@ jobs:
       env: ${{ inputs.env }}
       update_version_command: npm version prepatch --preid=rc --no-git-tag-version
       rails: '[[ ! "$VERSION" =~ "rc" ]] && [[ ! "$VERSION" =~ "pre" ]]'
-      update_version: ${{ inputs.update_version }}}
+      update_version: ${{ inputs.update_version }}
       cloud_deploy: ${{ inputs.cloud_deploy }}
       needs_build: ${{ inputs.needs_build }}
       needs_export: ${{ inputs.needs_export }}
