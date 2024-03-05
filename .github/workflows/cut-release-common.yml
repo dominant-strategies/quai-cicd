@@ -174,7 +174,7 @@ jobs:
       - name: Update Version
         if: ${{ inputs.update_version }}
         run: |
-          jq --arg new_version "v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))" '.version = $new_version' package.json > temp.json && mv temp.json package.json
+          jq --arg new_version "v$(npx semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))" '.version = $new_version' package.json > temp.json && mv temp.json package.json
           NEW_VERSION=$(jq -r '.version' package.json)
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
@@ -223,7 +223,7 @@ jobs:
       - name: Update Version
         if: ${{ inputs.update_version }}
         run: |
-          jq --arg new_version "v$(semver -i minor $(jq -r '.version' package.json | sed 's/^v//;s/-pre$//'))-pre" '.version = $new_version' package.json > temp.json && mv temp.json package.json
+          jq --arg new_version "v$(npx semver -i minor $(jq -r '.version' package.json | sed 's/^v//;s/-pre$//'))-pre" '.version = $new_version' package.json > temp.json && mv temp.json package.json
           NEW_VERSION=$(jq -r '.version' package.json)
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
@@ -307,7 +307,7 @@ jobs:
       - name: Update Version
         if: ${{ inputs.update_version }}
         run: |
-          jq --arg new_version "v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))" '.version = $new_version' package.json > temp.json && mv temp.json package.json
+          jq --arg new_version "v$(npx semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))" '.version = $new_version' package.json > temp.json && mv temp.json package.json
           NEW_VERSION=$(jq -r '.version' package.json)
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
@@ -356,7 +356,7 @@ jobs:
       - name: Update Version
         if: ${{ inputs.update_version }}
         run: |
-          jq --arg new_version "v$(semver -i minor $(jq -r '.version' package.json | sed 's/^v//;s/-pre$//'))-pre" '.version = $new_version' package.json > temp.json && mv temp.json package.json
+          jq --arg new_version "v$(npx semver -i minor $(jq -r '.version' package.json | sed 's/^v//;s/-pre$//'))-pre" '.version = $new_version' package.json > temp.json && mv temp.json package.json
           NEW_VERSION=$(jq -r '.version' package.json)
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
@@ -526,7 +526,7 @@ jobs:
 
     with:
       env: ${{ inputs.env }}
-      update_version_command: "jq --arg new_version \"v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))\" '.version = $new_version' package.json > temp.json && mv temp.json package.json"
+      update_version_command: "jq --arg new_version \"v$(npx semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))\" '.version = $new_version' package.json > temp.json && mv temp.json package.json"
       branch: ${{ needs.cutReleaseCandidateJS.outputs.branch }}
       rails: '[[ ! "$VERSION" =~ "rc" ]]'
       update_version: true
@@ -558,7 +558,7 @@ jobs:
 
     with:
       env: ${{ inputs.env }}
-      update_version_command: "jq --arg new_version \"v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))\" '.version = $new_version' package.json > temp.json && mv temp.json package.json"
+      update_version_command: "jq --arg new_version \"v$(npx semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))\" '.version = $new_version' package.json > temp.json && mv temp.json package.json"
       branch: ${{ needs.cutReleaseCandidateTS.outputs.branch }}
       rails: '[[ ! "$VERSION" =~ "rc" ]]'
       update_version: true

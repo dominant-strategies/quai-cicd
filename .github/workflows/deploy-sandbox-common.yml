@@ -118,7 +118,7 @@ jobs:
       GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
     with:
       env: ${{ inputs.env }}
-      update_version_command: "jq --arg new_version \"v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))\" '.version = $new_version' package.json > temp.json && mv temp.json package.json"
+      update_version_command: "jq --arg new_version \"v$(npx semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))\" '.version = $new_version' package.json > temp.json && mv temp.json package.json"
       rails: '[[ ! "$VERSION" =~ "pre" ]]'
       update_version: ${{ inputs.update_version }}
       cloud_deploy: ${{ inputs.cloud_deploy }}
@@ -146,7 +146,7 @@ jobs:
       GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
     with:
       env: ${{ inputs.env }}
-      update_version_command: "jq --arg new_version \"v$(semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))\" '.version = $new_version' package.json > temp.json && mv temp.json package.json"
+      update_version_command: "jq --arg new_version \"v$(npx semver -i patch $(jq -r '.version' package.json | sed 's/^v//'))\" '.version = $new_version' package.json > temp.json && mv temp.json package.json"
       rails: '[[ ! "$VERSION" =~ "pre" ]]'
       update_version: ${{ inputs.update_version }}
       cloud_deploy: ${{ inputs.cloud_deploy }}
