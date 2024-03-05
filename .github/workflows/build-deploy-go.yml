@@ -90,22 +90,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-#      - name: Check GPG Private Key
-#        run: |
-#          if [ -z "${{ secrets.GPG_PRIVATE_KEY }}" ]; then
-#            echo "GPG_PRIVATE_KEY is null"
-#          else
-#            echo "GPG_PRIVATE_KEY is set"
-#          fi
-#
-#      - name: Import GPG Key
-#        env:
-#          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-#          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-#        run: |
-#          echo "$GPG_PRIVATE_KEY" | gpg --import
-#          git config --global user.signingkey $GPG_KEY_ID
-#          git config --global commit.gpgsign true
+      - name: Import GPG Key
+        if: ${{ inputs.update_version }}
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --import
+          git config --global user.signingkey $GPG_KEY_ID
+          git config --global commit.gpgsign true
+          # Configure Git with CI account details
+          git config --global user.name "ci-dominantstrategies"
+          git config --global user.email "ci@dominantstrategies.io"
+          
+          # Optionally, check that the GPG key is correctly configured for signing
+          gpg --list-keys "ci@dominantstrategies.io"
 
       - uses: actions/checkout@v3
         with:
@@ -228,13 +227,21 @@ jobs:
           ref: ${{ inputs.branch }}
           ssh-key: ${{ secrets.GH_PAT }}
 
-#      - name: Import GPG Key
-#        env:
-#          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-#          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-#        run: |
-#          echo "$GPG_PRIVATE_KEY" | gpg --import
-#          git config --global user.signingkey $GPG_KEY_ID
+      - name: Import GPG Key
+        if: ${{ inputs.update_version }}
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --import
+          git config --global user.signingkey $GPG_KEY_ID
+          git config --global commit.gpgsign true
+          # Configure Git with CI account details
+          git config --global user.name "ci-dominantstrategies"
+          git config --global user.email "ci@dominantstrategies.io"
+          
+          # Optionally, check that the GPG key is correctly configured for signing
+          gpg --list-keys "ci@dominantstrategies.io"
 
       - name: Authenticate to Google Cloud
         if: ${{ !inputs.skip_deploy && inputs.gcp_project_id != '' && inputs.token_secret_name != '' }}
