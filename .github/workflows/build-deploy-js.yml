@@ -228,6 +228,8 @@ jobs:
         if: ${{ inputs.update_version }}
         with:
           branch: ${{ inputs.branch }}
+          commit_user_name: ci-dominantstrategies
+          commit_user_email: ci@dominantstrategies.io
         env:
           HUSKY: 0
 
@@ -405,5 +407,7 @@ jobs:
         if: ${{ inputs.update_version }}
         with:
           branch: ${{ inputs.branch }}
+          commit_user_name: ci-dominantstrategies
+          commit_user_email: ci@dominantstrategies.io
         env:
           HUSKY: 0

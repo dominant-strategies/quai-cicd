@@ -176,6 +176,8 @@ jobs:
         with:
           commit_message: "Prod Release ${{ env.VERSION }}"
           branch: ${{ github.ref }}
+          commit_user_name: ci-dominantstrategies
+          commit_user_email: ci@dominantstrategies.io
 
   createProdTagTS:
     needs: detect-language
@@ -249,6 +251,8 @@ jobs:
         with:
           commit_message: "Prod Release ${{ env.VERSION }}"
           branch: ${{ github.ref }}
+          commit_user_name: ci-dominantstrategies
+          commit_user_email: ci@dominantstrategies.io
 
   createProdTagGo:
     needs: detect-language
@@ -315,6 +319,8 @@ jobs:
         with:
           commit_message: "Prod Release ${{ env.VERSION }}"
           branch: ${{ github.ref }}
+          commit_user_name: ci-dominantstrategies
+          commit_user_email: ci@dominantstrategies.io
 
   buildDeploySandboxJS:
     needs: [createProdTagJS]
