@@ -226,7 +226,7 @@ jobs:
 
     - name: rm kubeconfig
       continue-on-error: true
-      run: rm kubeconfig.yaml
+      run: rm ${{ github.workspace }}/kubeconfig
 
     - uses: stefanzweifel/git-auto-commit-action@v4
       if: ${{ inputs.update_version }}

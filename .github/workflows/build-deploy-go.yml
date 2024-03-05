@@ -376,7 +376,7 @@ jobs:
       - name: rm kubeconfig
         if: ${{ !inputs.skip_deploy }}
         continue-on-error: true
-        run: rm kubeconfig.yaml
+        run: rm ${{ github.workspace }}/kubeconfig
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         if: ${{ inputs.update_version }}
