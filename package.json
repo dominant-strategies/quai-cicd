@@ -1,6 +1,6 @@
 {
   "name": "sample-js-project",
-  "version": "v1.27.0-pre",
+  "version": "v1.28.0-pre",
   "scripts": {
     "build": "echo 'Building JS project...' && echo $BUILD_ENV"
   },
