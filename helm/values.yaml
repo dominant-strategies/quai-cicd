@@ -1,6 +1,6 @@
 quaiCicd:
   image:
     name: quainetwork/quai-cicd
-    version: v1.28.0-pre
+    version: v1.28.0
   env: quai-dev
   replicas: 1
