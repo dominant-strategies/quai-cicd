@@ -95,6 +95,12 @@ jobs:
         run: |
           echo "$GPG_PRIVATE_KEY" | gpg --import
           git config --global user.signingkey $GPG_KEY_ID
+          # Configure Git with CI account details
+          git config --global user.name "ci-dominantstrategies"
+          git config --global user.email "ci@dominantstrategies.io"
+          
+          # Optionally, check that the GPG key is correctly configured for signing
+          gpg --list-keys "ci@dominantstrategies.io"
 
       - name: Set Repo Name
         run: |
@@ -241,6 +247,12 @@ jobs:
         run: |
           echo "$GPG_PRIVATE_KEY" | gpg --import
           git config --global user.signingkey $GPG_KEY_ID
+          # Configure Git with CI account details
+          git config --global user.name "ci-dominantstrategies"
+          git config --global user.email "ci@dominantstrategies.io"
+          
+          # Optionally, check that the GPG key is correctly configured for signing
+          gpg --list-keys "ci@dominantstrategies.io"
 
       - name: Authenticate to Google Cloud
         if: ${{ !inputs.skip_deploy && inputs.gcp_project_id != '' && inputs.token_secret_name != '' }}
