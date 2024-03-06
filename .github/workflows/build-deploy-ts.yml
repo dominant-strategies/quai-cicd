@@ -330,7 +330,7 @@ jobs:
         run: |
           pwd
           ls -l
-          ls -l ./.helm/app/
+          ls -l ./helm/
 
       - name: Deploy to cloud
         uses: WyriHaximus/github-action-helm3@v3
