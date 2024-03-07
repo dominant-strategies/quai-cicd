@@ -55,6 +55,10 @@ on:
         required: false
         type: string
         default: npm run build
+      include_chart:
+        required: false
+        type: boolean
+        default: true
 
     secrets:
       GH_PAT:
@@ -149,9 +153,11 @@ jobs:
         run: ${{ inputs.rails }}
 
       - name: Sync Chart.yaml version
+        if: ${{ inputs.include_chart }}
         run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
 
       - name: Sync values.yaml version
+        if: ${{ inputs.include_chart }}
         run: yq eval -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
 
       - name: Install Dependencies
@@ -396,9 +402,10 @@ jobs:
           echo "VERSION=$VERSION_VALUE" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
-        if: ${{ inputs.update_version }}
+        if: ${{ inputs.update_version && inputs.include_chart }}
         run: yq eval -P -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
       - name: Update values.yaml version
+        if: ${{ inputs.update_version && inputs.include_chart }}
         run: yq eval -P -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
 
       - name: Update package-lock.json

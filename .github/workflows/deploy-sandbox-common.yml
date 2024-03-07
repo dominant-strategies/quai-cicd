@@ -38,7 +38,7 @@ on:
       include_chart:
           required: false
           type: boolean
-          default: false
+          default: true
       update_version:
           required: false
           type: boolean
@@ -131,6 +131,7 @@ jobs:
       token_secret_name: ${{ inputs.token_secret_name }}
       needs_docker: ${{ inputs.needs_docker }}
       build_command: ${{ inputs.build_command }}
+      include_chart: ${{ inputs.include_chart }}
 
   buildDeploySandboxTS:
     needs: detect-language
@@ -160,6 +161,7 @@ jobs:
       token_secret_name: ${{ inputs.token_secret_name }}
       needs_docker: ${{ inputs.needs_docker }}
       build_command: ${{ inputs.build_command }}
+      include_chart: ${{ inputs.include_chart }}
 
   buildDeploySandboxGo:
     needs: detect-language
@@ -185,7 +187,7 @@ jobs:
       skip_deploy: ${{ inputs.skip_deploy }}
       build_command: ${{ inputs.build_command }}
       needs_docker: ${{ inputs.needs_docker }}
-      include_chart: ${{ inputs.include_chart }}
+      include_chart: false
       name_override: ${{ inputs.name_override }}
       gcp_project_id: ${{ inputs.gcp_project_id }}
       token_secret_name: ${{ inputs.token_secret_name }}

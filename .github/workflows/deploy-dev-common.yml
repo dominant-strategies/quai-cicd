@@ -30,7 +30,7 @@ on:
       include_chart:
         required: false
         type: boolean
-        default: false
+        default: true
       needs_docker:
         required: false
         type: boolean
@@ -140,6 +140,7 @@ jobs:
       gcp_project_id: ${{ inputs.gcp_project_id }}
       token_secret_name: ${{ inputs.token_secret_name }}
       build_command: ${{ inputs.build_command }}
+      include_chart: ${{ inputs.include_chart }}
 
   buildDeployDevJS:
     needs: detect-language
@@ -168,6 +169,7 @@ jobs:
       needs_docker: ${{ inputs.needs_docker }}
       token_secret_name: ${{ inputs.token_secret_name }}
       build_command: ${{ inputs.build_command }}
+      include_chart: ${{ inputs.include_chart }}
 
   buildDeployDevGo:
     needs: detect-language
@@ -191,7 +193,7 @@ jobs:
       skip_deploy: ${{ inputs.skip_deploy }}
       build_command: ${{ inputs.build_command }}
       needs_docker: ${{ inputs.needs_docker }}
-      include_chart: ${{ inputs.include_chart }}
+      include_chart: false
       rails: '[[ "$VERSION" =~ "pre" ]]'
       tag: false
       name_override: ${{ inputs.name_override }}

@@ -38,7 +38,7 @@ on:
       include_chart:
           required: false
           type: boolean
-          default: false
+          default: true
       name_override:
           required: false
           type: string
@@ -168,9 +168,11 @@ jobs:
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
+        if: ${{ inputs.include_chart }}
         run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
 
       - name: Update values.yaml version
+        if: ${{ inputs.include_chart }}
         run: yq eval -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
 
       - uses: stefanzweifel/git-auto-commit-action@v4
@@ -244,9 +246,11 @@ jobs:
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Update Chart.yaml version
+        if: ${{ inputs.include_chart }}
         run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
 
       - name: Update values.yaml version
+        if: ${{ inputs.include_chart }}
         run: yq eval -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
 
       - uses: stefanzweifel/git-auto-commit-action@v4
@@ -316,13 +320,13 @@ jobs:
           echo "v$(semver -i patch $(sed 's/^v//' VERSION))" > VERSION
           echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
 
-      - name: Update Chart.yaml version
-        if: ${{ inputs.include_chart }}
-        run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
-
-      - name: Update values.yaml version
-        if: ${{ inputs.include_chart }}
-        run: yq eval -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
+##      - name: Update Chart.yaml version
+##        if: ${{ inputs.include_chart }}
+##        run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
+##
+##      - name: Update values.yaml version
+##        if: ${{ inputs.include_chart }}
+##        run: yq eval -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
@@ -358,6 +362,7 @@ jobs:
       token_secret_name: ${{ inputs.token_secret_name }}
       needs_docker: ${{ inputs.needs_docker }}
       build_command: ${{ inputs.build_command }}
+      include_chart: ${{ inputs.include_chart }}
 
   buildDeploySandboxTS:
     needs: [createProdTagTS]
@@ -386,6 +391,7 @@ jobs:
       token_secret_name: ${{ inputs.token_secret_name }}
       needs_docker: ${{ inputs.needs_docker }}
       build_command: ${{ inputs.build_command }}
+      include_chart: ${{ inputs.include_chart }}
 
   buildDeployProdGo:
     needs: [createProdTagGo]
@@ -410,7 +416,7 @@ jobs:
       skip_deploy: ${{ inputs.skip_deploy }}
       build_command: ${{ inputs.build_command }}
       needs_docker: ${{ inputs.needs_docker }}
-      include_chart: ${{ inputs.include_chart }}
+      include_chart: false
       name_override: ${{ inputs.name_override }}
       gcp_project_id: ${{ inputs.gcp_project_id }}
       token_secret_name: ${{ inputs.token_secret_name }}
