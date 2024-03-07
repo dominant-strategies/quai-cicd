@@ -139,6 +139,7 @@ jobs:
       name_override: ${{ inputs.name_override }}
       gcp_project_id: ${{ inputs.gcp_project_id }}
       token_secret_name: ${{ inputs.token_secret_name }}
+      build_command: ${{ inputs.build_command }}
 
   buildDeployDevJS:
     needs: detect-language
@@ -166,6 +167,7 @@ jobs:
       gcp_project_id: ${{ inputs.gcp_project_id }}
       needs_docker: ${{ inputs.needs_docker }}
       token_secret_name: ${{ inputs.token_secret_name }}
+      build_command: ${{ inputs.build_command }}
 
   buildDeployDevGo:
     needs: detect-language

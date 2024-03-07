@@ -357,6 +357,7 @@ jobs:
       gcp_project_id: ${{ inputs.gcp_project_id }}
       token_secret_name: ${{ inputs.token_secret_name }}
       needs_docker: ${{ inputs.needs_docker }}
+      build_command: ${{ inputs.build_command }}
 
   buildDeploySandboxTS:
     needs: [createProdTagTS]
@@ -384,6 +385,7 @@ jobs:
       gcp_project_id: ${{ inputs.gcp_project_id }}
       token_secret_name: ${{ inputs.token_secret_name }}
       needs_docker: ${{ inputs.needs_docker }}
+      build_command: ${{ inputs.build_command }}
 
   buildDeployProdGo:
     needs: [createProdTagGo]

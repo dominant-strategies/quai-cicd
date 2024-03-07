@@ -539,6 +539,7 @@ jobs:
       gcp_project_id: ${{ inputs.gcp_project_id }}
       token_secret_name: ${{ inputs.token_secret_name }}
       needs_docker: ${{ inputs.needs_docker }}
+      build_command: ${{ inputs.build_command }}
 
 
 
@@ -571,6 +572,7 @@ jobs:
       gcp_project_id: ${{ inputs.gcp_project_id }}
       token_secret_name: ${{ inputs.token_secret_name }}
       needs_docker: ${{ inputs.needs_docker }}
+      build_command: ${{ inputs.build_command }}
 
   deployReleaseCandidateGo:
     uses: ./.github/workflows/build-deploy-go.yml

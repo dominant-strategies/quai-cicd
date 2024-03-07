@@ -51,6 +51,10 @@ on:
         required: true
         type: boolean
         default: false
+      build_command:
+        required: false
+        type: string
+        default: npm run build
 
     secrets:
       GH_PAT:
@@ -166,9 +170,9 @@ jobs:
             for arg in "${ARG_ARRAY[@]}"; do
                 BUILD_ARGS+=" $arg"
             done
-            eval "$BUILD_ARGS npm run build"
+            eval "$BUILD_ARGS ${{ inputs.build_command }}"
           else
-            npm run build
+            ${{ inputs.build_command }}
           fi
 
       - name: Export
