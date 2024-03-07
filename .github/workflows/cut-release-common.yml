@@ -243,7 +243,7 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Rev'd main to Release ${{ env.VERSION }}
-          branch: main
+          branch: ${{ inputs.branch }}
           commit_user_name: ci-dominantstrategies
           commit_user_email: ci@dominantstrategies.io
 
@@ -380,7 +380,7 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Rev'd main to Release ${{ env.VERSION }}
-          branch: main
+          branch: ${{ inputs.branch }}
           commit_user_name: ci-dominantstrategies
           commit_user_email: ci@dominantstrategies.io
 
@@ -514,7 +514,7 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Rev'd main to Release ${{ env.VERSION }}
-          branch: main
+          branch: ${{ inputs.branch }}
           commit_user_name: ci-dominantstrategies
           commit_user_email: ci@dominantstrategies.io
 
