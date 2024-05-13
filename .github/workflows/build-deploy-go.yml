@@ -172,6 +172,10 @@ jobs:
         if: ${{ inputs.needs_build }}
         run: ${{ inputs.build_command }}
 
+      - name: Test
+        if: ${{ inputs.needs_build }}
+        run: go test ./...
+
       - name: Debug secrets
         run: |
           echo ${{ secrets.DOCKER }}
