@@ -170,7 +170,6 @@ jobs:
       token_secret_name: ${{ inputs.token_secret_name }}
       build_command: ${{ inputs.build_command }}
       include_chart: ${{ inputs.include_chart }}
-      use_v: ${{ inputs.use_v }}
 
   buildDeployDevJSPrerelease:
     needs: detect-language
@@ -200,7 +199,6 @@ jobs:
       token_secret_name: ${{ inputs.token_secret_name }}
       build_command: ${{ inputs.build_command }}
       include_chart: ${{ inputs.include_chart }}
-      use_v: ${{ inputs.use_v }}
 
   buildDeployDevGo:
     needs: detect-language
