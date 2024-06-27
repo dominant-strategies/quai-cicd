@@ -53,6 +53,14 @@ on:
       token_secret_name:
         required: false
         type: string
+      prerelease_branch:
+        required: false
+        type: boolean
+        default: false
+      branch:
+        required: false
+        type: string
+        default: ${{ github.ref }}
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -136,7 +144,7 @@ jobs:
 
   buildDeployDevJS:
     needs: detect-language
-    if: needs.detect-language.outputs.language == 'javascript'
+    if: needs.detect-language.outputs.language == 'javascript' && !inputs.prerelease_branch
     uses: ./.github/workflows/build-deploy-js.yml
     secrets:
       DOCKER: ${{ secrets.DOCKER }}
@@ -162,6 +170,37 @@ jobs:
       token_secret_name: ${{ inputs.token_secret_name }}
       build_command: ${{ inputs.build_command }}
       include_chart: ${{ inputs.include_chart }}
+      use_v: ${{ inputs.use_v }}
+
+  buildDeployDevJSPrerelease:
+    needs: detect-language
+    if: needs.detect-language.outputs.language == 'javascript' && inputs.prerelease_branch
+    uses: ./.github/workflows/build-deploy-js.yml
+    secrets:
+      DOCKER: ${{ secrets.DOCKER }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      DOCKER_BUILD_ARGS: ${{ secrets.DOCKER_BUILD_ARGS }}
+      BUILD_ARGS: ${{ secrets.BUILD_ARGS }}
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+      GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
+    with:
+      env: ${{ inputs.env }}
+      update_version_command: npm version prerelease --preid=${{ inputs.branch }} --no-git-tag-version
+      update_version: ${{ inputs.update_version }}
+      cloud_deploy: false
+      needs_build: ${{ inputs.needs_build }}
+      needs_export: ${{ inputs.needs_export }}
+      install_command: ${{ inputs.install_command }}
+      skip_deploy: ${{ inputs.skip_deploy }}
+      name_override: ${{ inputs.name_override }}
+      gcp_project_id: ${{ inputs.gcp_project_id }}
+      needs_docker: ${{ inputs.needs_docker }}
+      token_secret_name: ${{ inputs.token_secret_name }}
+      build_command: ${{ inputs.build_command }}
+      include_chart: ${{ inputs.include_chart }}
+      use_v: ${{ inputs.use_v }}
 
   buildDeployDevGo:
     needs: detect-language
