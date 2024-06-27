@@ -105,15 +105,6 @@ jobs:
           fi
           echo "testing"
 
-  print-detected-language:
-    needs: detect-language
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print Detected Language
-        run: |
-          echo "Detected Language: ${{ needs.detect-language.outputs.language }}"
-
-
   buildDeployDevTS:
     needs: detect-language
     if: needs.detect-language.outputs.language == 'typescript'
