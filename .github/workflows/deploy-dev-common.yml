@@ -113,6 +113,18 @@ jobs:
           fi
           echo "testing"
 
+  get-branch:
+    runs-on: ubuntu-latest
+    outputs:
+      branch: $={{ steps.get_branch.outputs.branch }}
+
+    steps:
+      - name: Get branch name
+        id: get_branch
+        run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_REF: ${{ github.ref }}
+
   buildDeployDevTS:
     needs: detect-language
     if: needs.detect-language.outputs.language == 'typescript'
@@ -172,7 +184,7 @@ jobs:
       include_chart: ${{ inputs.include_chart }}
 
   buildDeployDevJSPrerelease:
-    needs: detect-language
+    needs: [detect-language, get-branch]
     if: needs.detect-language.outputs.language == 'javascript' && inputs.prerelease_branch
     uses: ./.github/workflows/build-deploy-js.yml
     secrets:
@@ -186,7 +198,7 @@ jobs:
       GH_GCP_TOKEN: ${{ secrets.GH_GCP_TOKEN }}
     with:
       env: ${{ inputs.env }}
-      update_version_command: npm version prerelease --preid=${{ inputs.branch }} --no-git-tag-version
+      update_version_command: npm version prerelease --preid=${{ needs.get-branch.outputs.branch }} --no-git-tag-version
       update_version: ${{ inputs.update_version }}
       cloud_deploy: false
       needs_build: ${{ inputs.needs_build }}
