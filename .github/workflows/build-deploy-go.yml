@@ -129,10 +129,10 @@ jobs:
           camel_case_name=$(echo $repo_name | awk -F- '{for(i=2; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2); }1' OFS="")
           echo "CAMEL_CASE_REPO_NAME=$camel_case_name" >> $GITHUB_ENV
 
-      - name: Set up Go 1.21.1
+      - name: Set up Go 1.23
         uses: actions/setup-go@v3
         with:
-          go-version: '1.21.1'
+          go-version: '1.23'
 
       - name: Check Go Version
         run: go version
