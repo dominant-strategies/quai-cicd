@@ -116,6 +116,15 @@ jobs:
           # Optionally, check that the GPG key is correctly configured for signing
           gpg --list-keys "ci@dominantstrategies.io"
 
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GH_PAT }}" > ~/.ssh/id_key
+          chmod 600 ~/.ssh/id_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          echo "Host github.com\n  IdentityFile ~/.ssh/id_key\n  StrictHostKeyChecking no" > ~/.ssh/config
+          chmod 644 ~/.ssh/config
+
       - name: Set Repo Name
         run: |
           repo_name=$(basename ${{ github.repository }})
