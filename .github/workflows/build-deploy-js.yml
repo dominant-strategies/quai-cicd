@@ -59,6 +59,10 @@ on:
         required: false
         type: boolean
         default: true
+      needs_docker_compose:
+        required: false
+        type: boolean
+        default: false
 
     secrets:
       GH_PAT:
@@ -159,6 +163,12 @@ jobs:
       - name: Sync values.yaml version
         if: ${{ inputs.include_chart }}
         run: yq eval -i ".${{ env.CAMEL_CASE_REPO_NAME }}.image.version=\"${{ env.VERSION }}\"" ./helm/values.yaml
+
+      - name: Set up Docker Compose
+        if: ${{ inputs.needs_docker_compose }}
+        run: |
+          curl -L "https://github.com/docker/compose/releases/download/v2.10.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
 
       - name: Install Dependencies
         if: ${{ inputs.install_command }}
