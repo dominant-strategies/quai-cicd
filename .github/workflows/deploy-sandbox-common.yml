@@ -53,6 +53,10 @@ on:
       token_secret_name:
         required: false
         type: string
+      needs_docker_compose:
+        required: false
+        type: boolean
+        default: false
     secrets:
       GH_PAT:
         description: 'needed for github login'
@@ -133,6 +137,7 @@ jobs:
       needs_docker: ${{ inputs.needs_docker }}
       build_command: ${{ inputs.build_command }}
       include_chart: ${{ inputs.include_chart }}
+      needs_docker_compose: ${{ inputs.needs_docker_compose }}
 
   buildDeploySandboxTS:
     needs: detect-language
@@ -163,6 +168,7 @@ jobs:
       needs_docker: ${{ inputs.needs_docker }}
       build_command: ${{ inputs.build_command }}
       include_chart: ${{ inputs.include_chart }}
+      needs_docker_compose: ${{ inputs.needs_docker_compose }}
 
   buildDeploySandboxGo:
     needs: detect-language
