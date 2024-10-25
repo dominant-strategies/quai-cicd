@@ -187,13 +187,21 @@ jobs:
         run: |
           if [ -n "${{ secrets.BUILD_ARGS }}" ]; then
             BUILD_ARGS=""
+            # Replace ,, with a unique placeholder __COMMA__
+            BUILD_ARGS_MODIFIED=$(echo "${{ secrets.BUILD_ARGS }}" | sed 's/,,/__COMMA__/g')
+          
+            # Change IFS to split on single commas
             OLD_IFS=$IFS
             IFS=','
-            read -ra ARG_ARRAY <<< "${{ secrets.BUILD_ARGS }}"
+            read -ra ARG_ARRAY <<< "$BUILD_ARGS_MODIFIED"
             IFS=$OLD_IFS
+          
             for arg in "${ARG_ARRAY[@]}"; do
-                BUILD_ARGS+=" $arg"
+              # Replace placeholder __COMMA__ back to ,
+              arg=$(echo "$arg" | sed 's/__COMMA__/,/g')
+              BUILD_ARGS+=" $arg"
             done
+          
             eval "$BUILD_ARGS ${{ inputs.build_command }}"
           else
             ${{ inputs.build_command }}
@@ -232,17 +240,27 @@ jobs:
         run: |
           if [ -n "${{ secrets.DOCKER_BUILD_ARGS }}" ]; then
             BUILD_ARGS=""
+            # Replace ,, with a unique placeholder __COMMA__
+            DOCKER_BUILD_ARGS_MODIFIED=$(echo "${{ secrets.DOCKER_BUILD_ARGS }}" | sed 's/,,/__COMMA__/g')
+          
+            # Change IFS to split on single commas
             OLD_IFS=$IFS
             IFS=','
-            read -ra ARG_ARRAY <<< "${{ secrets.DOCKER_BUILD_ARGS }}"
+            read -ra ARG_ARRAY <<< "$DOCKER_BUILD_ARGS_MODIFIED"
             IFS=$OLD_IFS
+          
             for arg in "${ARG_ARRAY[@]}"; do
+              # Replace placeholder __COMMA__ back to ,
+              arg=$(echo "$arg" | sed 's/__COMMA__/,/g')
               BUILD_ARGS+=" --build-arg $arg"
             done
+          
             eval "docker build $BUILD_ARGS -t quainetwork/${{ env.REPO_NAME }}:${{ env.VERSION }} ."
           else
             docker build -t quainetwork/${{ env.REPO_NAME }}:${{ env.VERSION }} .
           fi
+          
+      
 
 
       - name: Push to Docker Hub

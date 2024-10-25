@@ -187,18 +187,27 @@ jobs:
           username: quaibuild
           password: ${{ secrets.DOCKER }}
 
+
       - name: Build Docker
         if: ${{ inputs.needs_docker }}
         run: |
           if [ -n "${{ secrets.DOCKER_BUILD_ARGS }}" ]; then
             BUILD_ARGS=""
+            # Replace ,, with a unique placeholder __COMMA__
+            DOCKER_BUILD_ARGS_MODIFIED=$(echo "${{ secrets.DOCKER_BUILD_ARGS }}" | sed 's/,,/__COMMA__/g')
+          
+            # Change IFS to split on single commas
             OLD_IFS=$IFS
             IFS=','
-            read -ra ARG_ARRAY <<< "${{ secrets.DOCKER_BUILD_ARGS }}"
+            read -ra ARG_ARRAY <<< "$DOCKER_BUILD_ARGS_MODIFIED"
             IFS=$OLD_IFS
+          
             for arg in "${ARG_ARRAY[@]}"; do
+              # Replace placeholder __COMMA__ back to ,
+              arg=$(echo "$arg" | sed 's/__COMMA__/,/g')
               BUILD_ARGS+=" --build-arg $arg"
             done
+          
             eval "docker build $BUILD_ARGS -t quainetwork/${{ env.REPO_NAME }}:${{ env.VERSION }} ."
           else
             docker build -t quainetwork/${{ env.REPO_NAME }}:${{ env.VERSION }} .
