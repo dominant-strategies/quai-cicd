@@ -153,9 +153,6 @@ jobs:
           echo "VERSION=$VERSION_VALUE"
           echo "VERSION=$VERSION_VALUE" >> $GITHUB_ENV
 
-      - name: Sanity Check Branch
-        run: ${{ inputs.rails }}
-
       - name: Sync Chart.yaml version
         if: ${{ inputs.update_version && inputs.include_chart }}
         run: yq eval -i ".appVersion=\"${{ env.VERSION }}\"" ./helm/Chart.yaml
